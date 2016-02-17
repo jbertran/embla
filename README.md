@@ -1,30 +1,31 @@
-# Gameloop
+# Embla - WIP
+A tentative FRP tool for 2D openGL games in Clojure, with the end goal of
+supporting live-coding.
 
-A rough sketch of the signal infrastructure for Embla
-
-## Installation
-
-Irrelevant
+## Contents
+* Definitions for signals using clojure.core.async, not yet fully
+  functional
+* Definitions for openGL callbacks instances generated on the fly and
+  properly released
+* A clojure version of the LWJGL example
 
 ## Usage
-
-Irrelevant
-
-    $ java -jar gameloop-0.1.0-standalone.jar
+Hopefully:
+```
+$ cd embla/
+$ lein install
+$ lein run
+```
 
 ## Options
-
 None
 
 ## Examples
-
-...
+None
 
 ### Bugs
-
-...
+Many
 
 ## License
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the MIT License.
