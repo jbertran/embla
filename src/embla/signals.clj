@@ -1,5 +1,5 @@
 (ns embla.signals
-  (:require [clojure.core.async 
+  (:require [clojure.core.async
              :as async
              :refer [>! <! >!! <!! go chan buffer close! thread
                      alts! alts!! timeout]]
@@ -10,6 +10,7 @@
 (def sig-kb-output (chan))
 (def sig-time (chan))
 
+;; Ça sert à quoi ça ?
 (defn kb-listener-action
   [window key scancode action mods]
   (>! sig-kb-output (vector key action)))
@@ -18,18 +19,29 @@
   "Add a signal to the list of channels to close
   when terminating"
   [signal]
-  (swap! signal-vector (fn [l] (cons signal l))))
+  (swap! signal-vector conj signal))
 
 (defn signals-terminate
+  "Close every signal."
   []
   (doseq [signal @signal-vector] (try (close! signal))))
 
 (defn combine1
   "('a -> 'b) -> signal 'a -> signal 'b"
   [func signal]
-  (let [channel (chan)]
-    (go (let [msg (<! signal)] (func msg)))
-    channel))
+    (go-loop []
+      (let [msg (<! signal)]
+        (<! (func msg)))
+      (recur)))
+
+(defn combine2
+  "('a -> 'b -> 'c) -> signal 'a -> signal 'b -> signal 'c"
+  [func sig1 sig2]
+  (go-loop []
+    (let [fst (<! sig1)
+          sec (<! sig2)]
+      (<! (func fst sec)))
+    (recur)))
 
 (defn combine
   "Generates an async channel listening for signals
@@ -46,7 +58,7 @@
       (if (empty? loop-list)
         signal-out)
       (let [[sig & sigs-recur] loop-list]
-        (go 
+        (go
           (let [msg (<! (second sig))
                 storage (first sig)]
             ;; if msg's first arrival, inc signal-count
@@ -64,7 +76,7 @@
   ;; TODO: actual callback-to-signal management (?) 65-90
   (combine
    (fn [key action]
-     (case key 
+     (case key
        GLFW/GLFW_KEY_A (print "Key: A ")
        GLFW/GLFW_KEY_Z (print "Key: Z "))
      (case action

@@ -9,7 +9,8 @@
 (defn embla-init
   []
   (egl/versions)
-  (egl/opengl-init))
+  (egl/opengl-init)
+  (sig/default-signals-init))
 
 (defn embla-terminate
   []
@@ -31,7 +32,7 @@
   "Launch Embla. REPL live coding optional"
   [& args]
   (println "Embla starting...")
-        
+
   (try
     (embla-init)
     (embla-loop)
