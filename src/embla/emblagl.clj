@@ -34,6 +34,7 @@
     (GLFW/glfwDefaultWindowHints)
     (GLFW/glfwWindowHint GLFW/GLFW_VISIBLE GLFW/GLFW_FALSE)
     (GLFW/glfwWindowHint GLFW/GLFW_RESIZABLE GLFW/GLFW_TRUE)
+    ;; 
     ;; Window creation
     (let [window (GLFW/glfwCreateWindow width height "Hello World" 0 0)]
       (if (nil? window)
@@ -51,6 +52,22 @@
       (GLFW/glfwMakeContextCurrent @glfw-win)
       (GLFW/glfwSwapInterval 1)
       (GLFW/glfwShowWindow @glfw-win))))
+
+(defn embla-draw
+  []
+  (GL11/glBegin GL11/GL_TRIANGLES)
+  ;; Draw here
+  (GL11/glEnd)
+)
+
+"""
+(defn embla-triangle
+  "Lolilol."
+  [colorTriplet positionTuple]
+  (let [(r g b) colorTriplet (x y) positionTuple]
+    (GL11/glColor3f r g b)
+    (GL11/glVertex2f x y)))
+"""
 
 (defn opengl-terminate
   "Clean up after the window"

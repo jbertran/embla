@@ -4,6 +4,7 @@
   :license {:name "MIT License"
             :url "LICENSE"}
   :dependencies [[org.clojure/clojure "1.7.0"]
+                 []
                  [org.clojure/core.async "0.2.374"]]
     :resource-paths ["lwjgl_jar/lwjgl.jar"]
   :jvm-opts ["-XstartOnFirstThread"
