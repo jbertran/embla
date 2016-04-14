@@ -1,19 +1,38 @@
 (ns embla.signals
   (:require [clojure.core.async
              :as async
-             :refer [>! <! >!! <!! go chan buffer close! thread
+             :refer [>! <! >!! <!! go go-loop chan buffer close! thread
                      alts! alts!! timeout]]
-            [embla.callbacks :as cbacks])
+            [embla.callbacks :as cbacks]
+            [embla.basic-signals :as bsigs])
   (:gen-class))
 
 (def signal-vector (atom ()))
 (def sig-kb-output (chan))
 (def sig-time (chan))
 
-;; Ça sert à quoi ça ?
-(defn kb-listener-action
-  [window key scancode action mods]
-  (>! sig-kb-output (vector key action)))
+;;; Timer for elapsed time.
+(def timer (atom 0))
+(defn set-timer
+  []
+  (swap! timer (fn [] 0))
+  (go-loop []
+    (<! (timeout 1000))
+    (swap! timer inc)
+    (recur))
+  [value]
+  (swap! timer (fn [] value))
+  (go-loop []
+    (<! (timeout 1000))
+    (swap! timer inc)
+    (recur)))
+
+(defn keyboard-inputs
+  "Push every key event to the channel."
+  [window]
+  (GLFW/glfwSetKeyCallback window (fn [window key scancode action mods]
+                                    "Bla bla bla..."
+                                    (go (>! sig-kb-output key)))))
 
 (defn signal-register
   "Add a signal to the list of channels to close

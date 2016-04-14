@@ -25,7 +25,7 @@
   (while (= (GLFW/glfwWindowShouldClose @egl/glfw-win) GLFW/GLFW_FALSE)
     (GL11/glClear (bit-or GL11/GL_COLOR_BUFFER_BIT GL11/GL_DEPTH_BUFFER_BIT))
     (GLFW/glfwSwapBuffers @egl/glfw-win)
-    (GLFW/glfwPollEvents))
+    (GLFW/glfwWaitEvents))
   (GLFW/glfwDestroyWindow @egl/glfw-win))
 
 (defn -main
