@@ -11,7 +11,7 @@ supporting live-coding.
 
 ## Usage
 
-Embla requires boot.clj to run, in order to download LWJGL's native libraries for Linux.
+Embla requires [boot.clj](https://github.com/boot-clj/boot). to run, in order to download LWJGL's native libraries for Linux.
 
 * `boot repl` 
 * `(boot (build))`
