@@ -16,7 +16,7 @@ Embla requires [boot.clj](https://github.com/boot-clj/boot). to run, in order to
 * `boot repl` 
 * `(boot (build))`
 
-* `use <namespace>` To have access to a namespace's files
+* `(use <namespace>)` To have access to a namespace's files
 
 ## Options
 None
