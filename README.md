@@ -10,12 +10,13 @@ supporting live-coding.
 * A clojure version of the LWJGL example
 
 ## Usage
-Hopefully:
-```
-$ cd embla/
-$ lein install
-$ lein run
-```
+
+Embla requires boot.clj to run, in order to download LWJGL's native libraries for Linux.
+
+* `boot repl` 
+* `(boot (build))`
+
+* `use <namespace>` To have access to a namespace's files
 
 ## Options
 None
