@@ -3,8 +3,7 @@
              :as async
              :refer [>! <! >!! <!! go go-loop chan buffer close! thread
                      alts! alts!! timeout]]
-            [embla.callbacks :as cbacks]
-            [embla.basic-signals :as bsigs])
+            [embla.callbacks :as cbacks])
   (:gen-class))
 
 (def signal-vector (atom ()))
@@ -12,21 +11,16 @@
 (def sig-time (chan))
 
 ;;; Timer for elapsed time.
-(def timer (atom 0))
-(defn set-timer
-  []
-  (swap! timer (fn [] 0))
-  (go-loop []
-    (<! (timeout 1000))
-    (swap! timer inc)
-    (recur))
-  [value]
-  (swap! timer (fn [] value))
-  (go-loop []
-    (<! (timeout 1000))
-    (swap! timer inc)
-    (recur)))
+(defn timer []
+  "Gives a timer, starting at 0."
+  (let [time (chan)]
+    (go-loop []
+      (>! time (<! (timeout 1000)))
+      (swap! timer inc)
+      (recur))
+    time))
 
+;;; Every keyboard input signal.
 (defn keyboard-inputs
   "Push every key event to the channel."
   [window]
@@ -34,6 +28,9 @@
                                     "Bla bla bla..."
                                     (go (>! sig-kb-output key)))))
 
+
+
+;; Just for historical purposes. Will probably be removed later.
 (defn signal-register
   "Add a signal to the list of channels to close
   when terminating"
