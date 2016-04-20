@@ -1,4 +1,4 @@
-package embla_opengl;
+package embla.java.view;
 
 import java.nio.FloatBuffer;
 
