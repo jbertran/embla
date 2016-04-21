@@ -1,10 +1,13 @@
-package embla.java.model;
+package embla.model;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 // GOM of the world.
 public class Model {
   // To parse the GOM.
-  public String   final ID;
-  public String[]       class;
+  public final String ID;
+  public String[] classes;
   // Need to add the potential texture.
 
   // If all objects need others variables, add it here.
@@ -21,7 +24,7 @@ public class Model {
     this.y = y;
 
     this.ID = null;
-    this.class = null;
+    this.classes = null;
     this.children = new ArrayList<>();
   }
   public Model(int x, int y, String id) {
@@ -29,23 +32,23 @@ public class Model {
     this.y = y;
 
     this.ID = id;
-    this.class = null;
+    this.classes = null;
     this.children = new ArrayList<>();
   }
-  public Model(int x, int y, String[] class) {
+  public Model(int x, int y, String[] classes) {
     this.x = x;
     this.y = y;
 
     this.ID = null;
-    this.class = class;
+    this.classes = classes;
     this.children = new ArrayList<>();
   }
-  public Model(int x, int y, String[] class, String id) {
+  public Model(int x, int y, String[] classes, String id) {
     this.x = x;
     this.y = y;
 
     this.ID = id;
-    this.class = class;
+    this.classes = classes;
     this.children = new ArrayList<>();
   }
 
@@ -60,11 +63,11 @@ public class Model {
       return Optional.of(this);
     }
 
-    Model result;
+    Optional<Model> result;
     for (Model child: children) {
       result = child.getElementById(id);
       if (result.isPresent())
-        return Optional.of(result);
+        return result;
     }
 
     return Optional.empty();

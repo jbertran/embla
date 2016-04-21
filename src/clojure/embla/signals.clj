@@ -4,7 +4,8 @@
              :refer [>! <! >!! <!! go go-loop chan buffer close! thread
                      alts! alts!! timeout]]
             [embla.callbacks :as cbacks])
-  (:gen-class))
+  ;(:gen-class)
+  )
 
 (def signal-vector (atom ()))
 (def sig-kb-output (chan))
@@ -19,16 +20,6 @@
       (swap! timer inc)
       (recur))
     time))
-
-;;; Every keyboard input signal.
-(defn keyboard-inputs
-  "Push every key event to the channel."
-  [window]
-  (GLFW/glfwSetKeyCallback window (fn [window key scancode action mods]
-                                    "Bla bla bla..."
-                                    (go (>! sig-kb-output key)))))
-
-
 
 ;; Just for historical purposes. Will probably be removed later.
 (defn signal-register
@@ -87,15 +78,15 @@
               (>! signal-out (apply func (map siglist (fn [x] (@(first x)))))))))
         (recur sigs-recur)))))
 
-(defn default-signals-init
-  []
-  ;; TODO: actual callback-to-signal management (?) 65-90
-  (combine
-   (fn [key action]
-     (case key
-       GLFW/GLFW_KEY_A (print "Key: A ")
-       GLFW/GLFW_KEY_Z (print "Key: Z "))
-     (case action
-       GLFW/GLFW_RELEASE (println "Action: release")
-       GLFW/GLFW_PRESS (println "Action: press")))
-   sig-kb-output))
+;(defn default-signals-init
+;  []
+;  ;; TODO: actual callback-to-signal management (?) 65-90
+;  (combine
+;   (fn [key action]
+;     (case key
+;       GLFW/GLFW_KEY_A (print "Key: A ")
+;       GLFW/GLFW_KEY_Z (print "Key: Z "))
+;     (case action
+;       GLFW/GLFW_RELEASE (println "Action: release")
+;       GLFW/GLFW_PRESS (println "Action: press")))
+;   sig-kb-output))

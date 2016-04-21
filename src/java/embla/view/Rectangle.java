@@ -1,4 +1,4 @@
-package embla.java.view;
+package embla.view;
 
 public class Rectangle {
     // TODO

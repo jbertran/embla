@@ -14,9 +14,9 @@
 (defn versions
   "Get LWJGL/GLFW versions and print"
   []
-  (println (str "Using GLFW v" (GLFW/GLFW_VERSION_MAJOR) "." 
+  (println (str "Using GLFW v" (GLFW/GLFW_VERSION_MAJOR) "."
                 (GLFW/GLFW_VERSION_MINOR) "." (GLFW/GLFW_VERSION_REVISION)))
-  (println (str "Using LWJGL v" (Version/VERSION_MAJOR) "." 
+  (println (str "Using LWJGL v" (Version/VERSION_MAJOR) "."
                 (Version/VERSION_MINOR) "." (Version/VERSION_REVISION))))
 
 (defn escape-to-quit
@@ -34,7 +34,7 @@
     (GLFW/glfwDefaultWindowHints)
     (GLFW/glfwWindowHint GLFW/GLFW_VISIBLE GLFW/GLFW_FALSE)
     (GLFW/glfwWindowHint GLFW/GLFW_RESIZABLE GLFW/GLFW_TRUE)
-    ;; 
+    ;;
     ;; Window creation
     (let [window (GLFW/glfwCreateWindow width height "Hello World" 0 0)]
       (if (nil? window)
@@ -43,11 +43,11 @@
         (swap! glfw-win (fn [x] window)))
       ;; ESC quits the window
       (let [esccallback
-            (cback/keycallback-make @glfw-win escape-to-quit)]                        
+            (cback/keycallback-make @glfw-win escape-to-quit)]
         (GLFW/glfwSetKeyCallback @glfw-win esccallback))
       (let [video-mode (GLFW/glfwGetVideoMode (GLFW/glfwGetPrimaryMonitor))]
         (GLFW/glfwSetWindowPos @glfw-win
-                               (/ (- (.width video-mode) width) 2) 
+                               (/ (- (.width video-mode) width) 2)
                                (/ (- (.height video-mode) height) 2)))
       (GLFW/glfwMakeContextCurrent @glfw-win)
       (GLFW/glfwSwapInterval 1)

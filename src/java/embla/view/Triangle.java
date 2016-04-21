@@ -1,4 +1,4 @@
-package embla.java.view;
+package embla.view;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -11,18 +11,18 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 public class Triangle extends Shape implements IShape {
-	
-	
+
+
 	public Triangle(float [] pos, Color col) {
 		super();
-		
+
 		// Bookkeeping general info
 		summit_count = 3;
-		
+
 		// Manage buffer contents
 		setColor(col);
 		setPosition(pos);
-		
+
 		/** Set the VAO **/
 		GL30.glBindVertexArray(vaoid);
 		// Positions -- data already bound. No touching!
@@ -56,13 +56,13 @@ public class Triangle extends Shape implements IShape {
 		GL30.glBindVertexArray(0);
 		GL20.glUseProgram(0);
 	}
-	
+
 	public void setPosition(float [] summits) {
 		FloatBuffer vertices = BufferUtils.createFloatBuffer(summit_count * 4);
 		vertices.clear();
 		if (summits.length != summit_count * 2)
 			throw new Error("Supplied number of vertices does not match!");
-		for (int i = 0; i < summits.length; i+=2) { 
+		for (int i = 0; i < summits.length; i+=2) {
 			vertices.put(summits[i]);
 			vertices.put(summits[i+1]);
 			vertices.put(0f);
@@ -74,7 +74,7 @@ public class Triangle extends Shape implements IShape {
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
-	
+
 	public void setColor(Color c) {
 		FloatBuffer color = BufferUtils.createFloatBuffer(summit_count * 4);
 		color.clear();
@@ -84,7 +84,7 @@ public class Triangle extends Shape implements IShape {
 				color.put(v/255);
 			color.put(1f);
 		System.out.println(color);
-		for (int i = 0; i < color.limit(); i++)	
+		for (int i = 0; i < color.limit(); i++)
 			System.out.println(color.get(i));
 		color.flip();
 		setColors(color);
@@ -96,6 +96,6 @@ public class Triangle extends Shape implements IShape {
 	@Override
 	public void bindSprite() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

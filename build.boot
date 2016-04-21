@@ -3,7 +3,7 @@
 (set-env!
  :repositories #(conj % ["mavencentral" {:url "https://repo.maven.apache.org/maven2"}])
  :dependencies '[[org.lwjgl/lwjgl "3.0.0b"] [org.lwjgl/lwjgl-platform "3.0.0b" :classifier "natives-linux"]]
- :resource-paths #{"src/embla/"}
+ :resource-paths #{"src/"}
  )
 
 (comment
@@ -16,7 +16,7 @@
 (deftask build
   "Build embla with LWJGL dependencies"
   []
-  (comp 
-   (pom :project 'embla :version "0.1.0")  
+  (comp
+   (pom :project 'embla :version "0.1.0")
    (aot :all)
    ))
