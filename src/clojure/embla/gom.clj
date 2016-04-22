@@ -1,42 +1,116 @@
 (ns embla.gom
   (:import [embla.model Circle Model Rectangle Shape]))
 
-(defmacro add-children-sub
-  [this & children]
-  (map (fn [child] (list '.addChild this child))
-         children))
-
+;; Allow to dynamically add children.
 (defmacro add-children
+  ([this]
+   (binding [*out* *err*]
+     (println "No children ? Just pass.")))
+  ([this & children]
+   `(do ~@(macroexpand `(add-children-list ~this ~@children)))))
+
+(defmacro add-children-list 
   [this & children]
-  (let [x (macroexpand `(add-children-sub ~this ~children))]
-    (println x)))
+  (map (fn [child] (list '.addChild this child)) children))
 
-(macroexpand '(add-children-sub "test" '@("test" "test2")))
-
+;; Macros for GOM definition.
 (defmacro defgom
-  "Creates the GOM."
-  ;; If only name is provided, create an empty GOM.
+  "Creates the GOM. Full or Empty."
   ([name]
-  `(Model. -1 -1 "GOMRoot"))
-  ;; If a body is provided, create a full GOM.
+   `(Model. -1 -1 nil "GOMRoot"))
   ([name & body]
-  `(let [gom# (Model. -1 -1 "GOMRoot")]
-     ~@(add-children gom# body))))
+   (let [sym (gensym)]
+     `(let [~sym (Model. -1 -1 nil "GOMRoot")]
+        ~@(macroexpand `(add-children-list ~sym ~@body))
+        ~sym))))
 
-(macroexpand '(defgom "Test"))
-(let [gom (defgom "Test")]
-  (macroexpand '(add-children-sub gom "test" "test2")))
+(defmacro defrect
+  "Creates a rectangle. Full or Empty."
+  ([variables]
+   `(Rectangle. ~(variables :x) 
+                ~(variables :y) 
+                ~(variables :length)
+                ~(variables :height)
+                ~(variables :id)))
+  ([variables & body]
+   (let [sym (gensym)]
+     `(let [~sym (Rectangle. ~(variables :x) 
+                             ~(variables :y) 
+                             ~(variables :length)
+                             ~(variables :height)
+                             ~(variables :id))]
+        ~@(macroexpand `(add-children-list ~sym ~@body))
+        ~sym))))
 
-(map (fn [child] `(.addChild this ~child)) '("test" "test2"))
+(defmacro defcircle
+  "Creates a circle. Full or Empty."
+  ([variables]
+   `(Circle. ~(variables :x)
+             ~(variables :y)
+             ~(variables :radius)
+             ~(variables :id)))
+  ([variables & body]
+   (let [sym (gensym)]
+     `(let [~sym (Circle. ~(variables :x)
+                          ~(variables :y)
+                          ~(variables :radius)
+                          ~(variables :id))]
+        ~@(macroexpand `(add-children-list ~sym ~@body))
+        ~sym))))
 
-(defmacro rectangle
-  "Creates a rectangle."
-  ([x y length height & body]
-  `(let [rectangle# (Rectangle. x y length height)]
-     ~@(add-children rectangle# body)))
-  ([x y length height id-class & body]
-  `(let [rectangle# (Rectangle. x y length height id-class)]
-     ~@(add-children rectangle# body)))
-  ([x y length height id classes & body]
-  `(let [rectangle# (Rectangle. x y length height ~(join classes) id)]
-     ~@(add-children rectangle# body))))
+(defmacro defshape
+  "Creates a shape. Full or Empty."
+  ([variables]
+   `(Shape. ~(variables :x)
+            ~(variables :y)
+            ~(variables :id)))
+  ([variables & body]
+   (let [sym (gensym)]
+     `(let [~sym (Shape. ~(variables :x)
+                         ~(variables :y)
+                         ~(variables :id))]
+        ~@(macroexpand `(add-children-list ~sym ~@body))
+        ~sym))))
+
+;; Debug purposes.
+(println (.toString (defgom "Root"
+                      (defgom "test")
+                      (rectangle {:x 50
+                                  :y 50
+                                  :length 200
+                                  :height 200
+                                  :id "Rectangle"}
+                                 (rectangle {:x 50
+                                             :y 50
+                                             :length 200
+                                             :height 200
+                                             :id "Rectangle"}))
+                      (rectangle {:x 50
+                                  :y 50
+                                  :length 200
+                                  :height 200
+                                  :id "Rectangle"})) 0))
+
+(let [gom (defgom "Root")]
+  (add-children gom
+                (rectangle {:x 50
+                            :y 50
+                            :length 200
+                            :height 200
+                            :id "Rectangle"}
+                           (rectangle {:x 50
+                                       :y 50
+                                       :length 200
+                                       :height 200
+                                       :id "Rectangle"}))
+                (rectangle {:x 50
+                            :y 50
+                            :length 200
+                            :height 200
+                            :id "Rectangle"}
+                           (rectangle {:x 50
+                                       :y 50
+                                       :length 200
+                                       :height 200
+                                       :id "Rectangle"})))
+  (println (.toString gom 0)))   

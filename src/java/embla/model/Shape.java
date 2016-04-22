@@ -4,8 +4,8 @@ public class Shape extends Model {
   public int[] angles;
 
   // Create a Shape.
-  public Shape(int x, int y, int[] angles) {
-    super(x, y);
-    this.angles = angles;
+  public Shape(int x, int y, String id) {
+    super(x, y, null, id);
+    this.angles = null;
   }
 }

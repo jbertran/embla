@@ -19,36 +19,12 @@ public class Model {
   public ArrayList<Model> children;
 
   // Common constructors to all elements. May have or not classes or ID.
-  public Model(int x, int y) {
-    this.x = x;
-    this.y = y;
-
-    this.ID = null;
-    this.classes = null;
-    this.children = new ArrayList<>();
-  }
-  public Model(int x, int y, String id) {
-    this.x = x;
-    this.y = y;
-
-    this.ID = id;
-    this.classes = null;
-    this.children = new ArrayList<>();
-  }
-  public Model(int x, int y, String[] classes) {
-    this.x = x;
-    this.y = y;
-
-    this.ID = null;
-    this.classes = classes;
-    this.children = new ArrayList<>();
-  }
   public Model(int x, int y, String[] classes, String id) {
     this.x = x;
     this.y = y;
 
-    this.ID = id;
-    this.classes = classes;
+    this.ID = id != null ? id : null;
+    this.classes = classes != null ? classes : null;
     this.children = new ArrayList<>();
   }
 
@@ -67,9 +43,27 @@ public class Model {
     for (Model child: children) {
       result = child.getElementById(id);
       if (result.isPresent())
-        return result;
+      return result;
     }
 
     return Optional.empty();
+  }
+
+  // Print the model.
+  public String toString(int tab) {
+    StringBuffer stringReturn = new StringBuffer();
+
+    for (int i = 0; i < tab; i++)
+      stringReturn.append(" ");
+    stringReturn.append(ID);
+    stringReturn.append(" ");
+    stringReturn.append(classes);
+
+    for (Model child: children) {
+      stringReturn.append('\n');
+      stringReturn.append(child.toString(tab + 2));
+    }
+
+    return stringReturn.toString();
   }
 }
