@@ -9,6 +9,8 @@
 
 ;; Basic signals for handling.
 (def keyboard-input (chan))
+(def custom-signals '())
+
 
 (defn timer
   "Gives a timer, starting at 0. Count every second."
@@ -21,11 +23,56 @@
     time))
 
 (defn update-chan 
-  "push the value to keyboard-input. Little functions to be used in java."
+  "Push the value to keyboard-input. Little functions to be used in java."
   [key-press state]
   (go (>! keyboard-input (list key-press state))))
 
+(defn search-signal
+  "Search for the named signal into the existing signals. false if signal does not exist."
+  [name]
+  (loop [[sig & signals] custom-signals]
+    (let [sig-name (first sig)]
+      (if (not= name sig-name)
+        (if-not (empty? signals)
+          (recur signals)
+          false)
+        sig))))
 
+(defn create-signal
+  "Creates a proper signal for embla."
+  [name]
+  (let [custom (chan)]
+    (if (search-signal name)
+      (throw (Exception. "Trying to create an already existent signal.")))
+    (alter-var-root (var custom-signals) #(cons (list name custom (atom '())) %))))
+
+(defn signal-register
+  "Register the channel fun-sig to the signal named name."
+  [name fun-sig]
+  (let [signal (search-signal name)]
+    (if-not signal
+      (throw (Exception. "Trying to register to inexistent signal."))
+      (let [fun-signals (second (rest signal))]
+        (swap! fun-signals #(cons fun-sig %))))))
+
+(defn defn-sig
+  "Func have to take one channel in parameter."
+  [name func]
+  (let [channel (chan)]
+    (func channel)
+    (signal-register name channel)))
+
+(defn broadcast-all
+  "Transfer the value from the channel to all functions which need it."
+  []
+  (loop [[sig & signals] custom-signals]
+    (let [input  (second sig)
+          output (second (rest sig))]
+      (go-loop []
+        (let [msg (<! input)]
+          (map #(go (>! % msg)) output)))
+      (if-not (empty? signals)
+        (recur signals)))))
 
 ;;; Historical purposes
 (comment
