@@ -3,90 +3,74 @@
              :as async
              :refer [>! <! >!! <!! go go-loop chan buffer close! thread
                      alts! alts!! timeout]]
-            [embla.callbacks :as cbacks])
-  ;(:gen-class)
-  )
+            ;; [embla.callbacks :as cbacks])
+            )
+  (:gen-class))
 
-(def signal-vector (atom ()))
-(def sig-kb-output (chan))
-(def sig-time (chan))
+;; Basic signals for handling.
+(def keyboard-input (chan))
 
-;;; Timer for elapsed time.
-(defn timer []
-  "Gives a timer, starting at 0."
+(defn timer
+  "Gives a timer, starting at 0. Count every second."
+  []
   (let [time (chan)]
-    (go-loop []
-      (>! time (<! (timeout 1000)))
-      (swap! timer inc)
-      (recur))
+    (go-loop [times 0]
+      (<! (timeout 1000))
+      (>! time times)
+      (recur (inc times)))
     time))
 
-;; Just for historical purposes. Will probably be removed later.
-(defn signal-register
-  "Add a signal to the list of channels to close
-  when terminating"
-  [signal]
-  (swap! signal-vector conj signal))
+(defn update-chan 
+  "push the value to keyboard-input. Little functions to be used in java."
+  [key-press state]
+  (go (>! keyboard-input (list key-press state))))
 
-(defn signals-terminate
-  "Close every signal."
-  []
-  (doseq [signal @signal-vector] (try (close! signal))))
 
-(defn combine1
-  "('a -> 'b) -> signal 'a -> signal 'b"
-  [func signal]
+
+;;; Historical purposes
+(comment
+  (defn combine1
+    "('a -> 'b) -> signal 'a -> signal 'b"
+    [func signal]
     (go-loop []
       (let [msg (<! signal)]
         (<! (func msg)))
       (recur)))
 
-(defn combine2
-  "('a -> 'b -> 'c) -> signal 'a -> signal 'b -> signal 'c"
-  [func sig1 sig2]
-  (go-loop []
-    (let [fst (<! sig1)
-          sec (<! sig2)]
-      (<! (func fst sec)))
-    (recur)))
+  (defn combine2
+    "('a -> 'b -> 'c) -> signal 'a -> signal 'b -> signal 'c"
+    [func sig1 sig2]
+    (go-loop []
+      (let [fst (<! sig1)
+            sec (<! sig2)]
+        (<! (func fst sec)))
+      (recur)))
 
-(defn combine
-  "Generates an async channel listening for signals
+  (defn combine
+    "Generates an async channel listening for signals
   and applying func to their outputs"
-  [func & signals]
-  (def signal-count (atom 0))
-  (let [signal-out (chan)
-        siglist-size (count signals)
-        ;; [atom signal] vector, pass atom to go for each signal
-        siglist (map (fn [s] (vector (atom nil) s)) signals)]
-    ;; Define a waiting function for each sig in the argument list
-    ;; => (count signals) waiting processes
-    (loop [loop-list siglist]
-      (if (empty? loop-list)
-        signal-out)
-      (let [[sig & sigs-recur] loop-list]
-        (go
-          (let [msg (<! (second sig))
-                storage (first sig)]
-            ;; if msg's first arrival, inc signal-count
-            (if (nil? storage)
-              (swap! signal-count inc))
-            ;; Put signal in its place either way
-            (swap! storage (fn [x] msg))
-            ;; If the signal has sufficient arguments, send it.
-            (if (= @signal-count siglist-size)
-              (>! signal-out (apply func (map siglist (fn [x] (@(first x)))))))))
-        (recur sigs-recur)))))
-
-;(defn default-signals-init
-;  []
-;  ;; TODO: actual callback-to-signal management (?) 65-90
-;  (combine
-;   (fn [key action]
-;     (case key
-;       GLFW/GLFW_KEY_A (print "Key: A ")
-;       GLFW/GLFW_KEY_Z (print "Key: Z "))
-;     (case action
-;       GLFW/GLFW_RELEASE (println "Action: release")
-;       GLFW/GLFW_PRESS (println "Action: press")))
-;   sig-kb-output))
+    [func & signals]
+    (def signal-count (atom 0))
+    (let [signal-out (chan)
+          siglist-size (count signals)
+          ;; [atom signal] vector, pass atom to go for each signal
+          siglist (map (fn [s] (vector (atom nil) s)) signals)]
+      ;; Define a waiting function for each sig in the argument list
+      ;; => (count signals) waiting processes
+      (loop [loop-list siglist]
+        (if (empty? loop-list)
+          signal-out)
+        (let [[sig & sigs-recur] loop-list]
+          (go
+            (let [msg (<! (second sig))
+                  storage (first sig)]
+              ;; if msg's first arrival, inc signal-count
+              (if (nil? storage)
+                (swap! signal-count inc))
+              ;; Put signal in its place either way
+              (swap! storage (fn [x] msg))
+              ;; If the signal has sufficient arguments, send it.
+              (if (= @signal-count siglist-size)
+                (>! signal-out (apply func (map siglist (fn [x] (@(first x)))))))))
+          (recur sigs-recur)))))
+  )

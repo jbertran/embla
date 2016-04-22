@@ -17,10 +17,10 @@ public class GOM {
   private Model world;
 
   // Create the world, and create the root.
-  public GOM() {
-    this.world = new Model(-1, -1, "GOMRoot");
+  public GOM(String id) {
+    this.world = new Model(-1, -1, null, id);
     ids = new ArrayList<>();
-    ids.add("GOMRoot");
+    ids.add(id);
   }
 
   // Return a precise element defined by ID.

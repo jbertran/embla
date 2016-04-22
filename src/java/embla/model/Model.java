@@ -23,8 +23,8 @@ public class Model {
     this.x = x;
     this.y = y;
 
-    this.ID = id != null ? id : null;
-    this.classes = classes != null ? classes : null;
+    this.ID = id;
+    this.classes = classes;
     this.children = new ArrayList<>();
   }
 
