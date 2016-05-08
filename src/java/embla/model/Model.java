@@ -18,6 +18,9 @@ public class Model {
   // Every objects could have children.
   public ArrayList<Model> children;
 
+  // Boolean if the model has been changed.
+  private boolean changed;
+
   // Common constructors to all elements. May have or not classes or ID.
   public Model(int x, int y, String[] classes, String id) {
     this.x = x;
@@ -26,6 +29,7 @@ public class Model {
     this.ID = id;
     this.classes = classes;
     this.children = new ArrayList<>();
+    this.changed = false;
   }
 
   // Add the child to the children of the element.

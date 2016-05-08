@@ -30,13 +30,15 @@
 (defn search-signal
   "Search for the named signal into the existing signals. false if signal does not exist."
   [name]
-  (loop [[sig & signals] custom-signals]
-    (let [sig-name (first sig)]
-      (if (not= name sig-name)
-        (if-not (empty? signals)
-          (recur signals)
-          false)
-        sig))))
+  (if (empty? custom-signals)
+    false
+    (loop [[sig & signals] custom-signals]
+      (let [sig-name (first sig)]
+        (if (not= name sig-name)
+          (if-not (empty? signals)
+            (recur signals)
+            false)
+          sig)))))
 
 (defn create-signal
   "Creates a proper signal for embla."
