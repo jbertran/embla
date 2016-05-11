@@ -1,4 +1,4 @@
-package embla.model;
+package java.embla.model;
 
 public class Circle extends Model {
   public int radius;

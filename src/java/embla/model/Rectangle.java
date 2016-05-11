@@ -1,4 +1,4 @@
-package embla.model;
+package java.embla.model;
 
 public class Rectangle extends Model {
   public int length, height;

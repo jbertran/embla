@@ -1,9 +1,6 @@
-package embla.utils;
+package java.embla.utils;
 
-import embla.model.Model;
-import embla.model.Shape;
-import embla.model.Circle;
-import embla.model.Rectangle;
+import java.embla.model.*;
 
 import java.util.ArrayList;
 import java.util.Optional;

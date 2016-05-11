@@ -1,4 +1,4 @@
-package embla.model;
+package java.embla.model;
 
 import java.util.ArrayList;
 import java.util.Optional;

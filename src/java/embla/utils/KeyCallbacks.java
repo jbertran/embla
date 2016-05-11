@@ -1,9 +1,6 @@
 package java.embla.utils;
 
-import embla.model.Model;
-import embla.model.Shape;
-import embla.model.Circle;
-import embla.model.Rectangle;
+import java.embla.model.*;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFW;
