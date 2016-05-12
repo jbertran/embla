@@ -1,9 +1,9 @@
-package java.embla.utils;
-
-import java.embla.model.*;
+package embla.utils;
 
 import java.util.ArrayList;
 import java.util.Optional;
+
+import embla.model.*;
 
 // GOM — Game Object Model — is a tree corresponding to world.
 public class GOM {
@@ -23,5 +23,9 @@ public class GOM {
   // Return a precise element defined by ID.
   public Optional<Model> getElementById(final String id) {
     return world.getElementById(id);
+  }
+  
+  public Model root() {
+	  return world;
   }
 }

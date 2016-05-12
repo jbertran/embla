@@ -1,5 +1,6 @@
-package java.embla.model;
+package embla.model;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ public class Model {
   // If all objects need others variables, add it here.
   // Every objects has coordinates.
   public int x, y;
+  public Color color;
 
   // To construct the tree.
   // Every objects could have children.

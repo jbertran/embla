@@ -1,4 +1,4 @@
-package java.embla.model;
+package embla.model;
 
 public class Shape extends Model {
   public int[] angles;
