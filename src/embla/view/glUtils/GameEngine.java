@@ -44,29 +44,19 @@ import org.lwjgl.opengl.GL11;
 import embla.model.Circle;
 import embla.model.Model;
 import embla.model.Rectangle;
-<<<<<<< HEAD
 import embla.model.Sprite;
 import embla.model.Triangle;
-=======
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 import embla.view.glShapes.GLCircle;
 import embla.view.glShapes.GLRectangle;
 import embla.view.glShapes.GLShape;
 import embla.view.glShapes.GLSprite;
-<<<<<<< HEAD
 import embla.view.glShapes.GLTriangle;
-=======
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 
 public class GameEngine {
 	// The window handle
 	private long window;
 	private GLFWKeyCallback   keyCallback;
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	float [] pos = { 1f, 1f, -1f, 1f, 1f, -1f };
 	float [] posR = { 0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f };
 	float [] posC = { 0.0f, 0.0f };private GLFWErrorCallback errorCallback;
@@ -76,11 +66,7 @@ public class GameEngine {
 	private Optional<Model[]> changes;
 	private Model world;
 	public int width, height;
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	public GameEngine(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -88,11 +74,7 @@ public class GameEngine {
 		this.world = new Model(-1, -1, null, "root");
 		this.changes = Optional.empty();
 	}
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -156,11 +138,7 @@ public class GameEngine {
 
 		// Make the window visible
 		glfwShowWindow(window);
-<<<<<<< HEAD
 
-=======
-		
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		/** Setup the projection, enable textures **/
 		GL.createCapabilities();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -172,7 +150,6 @@ public class GameEngine {
 
 	public void glLoop() {
 		// Set the clear color
-<<<<<<< HEAD
 		glClearColor(0.4f, 0.6f, 0.9f, 0f);
 
 		// Run the rendering loop until the user has attempted to close the window
@@ -203,32 +180,6 @@ public class GameEngine {
 			while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-=======
-		glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-
-		// Run the rendering loop until the user has attempted to close the window
-		
-		Rectangle r = new Rectangle(width/4, 3*height/4, width/2, height/2, "rect");
-		Circle c = new Circle(width/2, height/2, height/3, "circ");
-		world.addChild(r);
-		r.addChild(c);
-		
-		GLRectangle rect = new GLRectangle("rect", this, width/4, 3*height/4, width/2, height/2, Color.red);
-		GLCircle circ = new GLCircle("circ", this, width/2, height/2, height/3, Color.yellow);
-		GLSprite sprite = new GLSprite("sprite", this, this.loader, "resources/link.gif", 0, height, width, height);
-		glShapes.put(rect.id(), rect);
-		glShapes.put(circ.id(), circ);
-		
-		try {
-			while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-	
-				/**
-				rect.render();
-				circ.render();
-				sprite.render();
-				**/
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 				/**
 				 * draw the model with OpenGL, including changes if applicable
 				 */
@@ -249,7 +200,6 @@ public class GameEngine {
 	public void redraw() {
 		// Propagate model changes to GL buffers
 		if (changes.isPresent()) {
-<<<<<<< HEAD
 			for (Model modelch : changes.get()) {
 				GLShape s = glShapes.get(modelch.ID);
 				if (s != null)
@@ -257,19 +207,11 @@ public class GameEngine {
 				else
 					throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
 			}
-=======
-			for (Model modelch : changes.get()) 
-				glShapes.get(modelch.ID).propagate(modelch);
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		}
 		// Redraw the scene
 		draw_model_item(world);
 	}
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	public void draw_model_item(Model mod) {
 		// Draw the item
 		GLShape s = glShapes.get(mod.ID);
@@ -282,11 +224,7 @@ public class GameEngine {
 		else
 			throw new RuntimeException("Attempted to render GLShape not known to the engine");
 	}
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	private void draw_children(Model mod) {
 		for (Model m : mod.children)
 			draw_model_item(m);

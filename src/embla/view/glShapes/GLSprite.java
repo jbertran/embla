@@ -11,22 +11,15 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import embla.model.Model;
-<<<<<<< HEAD
 import embla.model.Sprite;
-=======
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 import embla.view.glUtils.GameEngine;
 import embla.view.glUtils.TextureLoader;
 
 public class GLSprite extends GLShape implements IGLShape {
 	
 	private static final Color CLEAR_COLOR = new Color(0.0f, 0.0f, 0.0f, 0.0f);
-<<<<<<< HEAD
 	private TextureLoader loader;
 	private GLTexture texture = null;
-=======
-	private GLTexture texture;
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	private int vbo_texcoords;
 
 	public GLSprite(String e_ID, GameEngine engine, TextureLoader loader, String path,
@@ -34,20 +27,11 @@ public class GLSprite extends GLShape implements IGLShape {
 		super(e_ID, engine, "shaders/texture_vertex.glsl", "shaders/texture_fragment.glsl");
 		// Bookkeeping general info
 		summit_count = 4;
-<<<<<<< HEAD
 		this.loader = loader;
 		
 		// Manage buffer contents
 		toProjection(x, y, width, height, path);
 		colorToVBO(CLEAR_COLOR);
-=======
-		this.texture = loader.loadTexture(path);
-		
-		// Manage buffer contents
-		toProjection(x, y, width, height);
-		colorToVBO(CLEAR_COLOR);
-		texture.bindToGL();
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		setupTexCoords();
 		
 		/** Bind extra attribute for the shader program's texture input **/
@@ -74,27 +58,16 @@ public class GLSprite extends GLShape implements IGLShape {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL20.glDisableVertexAttribArray(2);
 		// End
-<<<<<<< HEAD
 		GL30.glBindVertexArray(0);
 	}
 	
 	private void toProjection(int x, int y, int width, int height, String path) {
 		// Update coordinates
-=======
-		GL30.glBindVertexArray(0);		
-	}
-	
-	private void toProjection(int x, int y, int width, int height) {
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		float [] glpos = new float [8];
 		float glw = ((float) (2*width) / engine.width);
 		float glh = ((float) (2*height) / engine.height);
 		float glx = ((float) (2*x) / engine.width) -1;
 		float gly = ((float) (2*y) / engine.width) -1;
-<<<<<<< HEAD
-=======
-		System.out.println(glw + " " + glh + " " + glx + " " + gly + " ");
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		glpos[0] = glx;
 		glpos[1] = gly;
 		glpos[2] = glx + glw;
@@ -103,7 +76,6 @@ public class GLSprite extends GLShape implements IGLShape {
 		glpos[5] = gly - glh;
 		glpos[6] = glx;
 		glpos[7] = gly - glh;
-<<<<<<< HEAD
 		// Update position
 		positionToVBO(glpos);
 		// Update texture if necessary
@@ -111,13 +83,6 @@ public class GLSprite extends GLShape implements IGLShape {
 			this.texture = loader.loadTexture(path);
 			this.texture.bindToGL();
 		}		
-=======
-		String p = "";
-		for (float i : glpos)
-			p += i + ", ";
-		System.out.println(p);
-		positionToVBO(glpos);
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	}
 	
 	private void setupTexCoords() {
@@ -162,16 +127,9 @@ public class GLSprite extends GLShape implements IGLShape {
 
 	@Override
 	public void propagate(Model m) {
-<<<<<<< HEAD
 		if (m instanceof Sprite)
 			toProjection(m.x, m.y, ((Sprite) m).width, ((Sprite) m).height, ((Sprite) m).path);
 		else
 			throw new RuntimeException("Model node / openGL draw call mismatch");
 	}
-=======
-		// TODO Auto-generated method stub
-		
-	}
-	
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 }

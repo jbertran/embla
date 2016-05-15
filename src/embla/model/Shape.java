@@ -1,11 +1,11 @@
 package embla.model;
 
 public class Shape extends Model {
-  public int[] angles;
+	private int[][] points;
 
-  // Create a Shape.
-  public Shape(int x, int y, String id) {
-    super(x, y, null, id);
-    this.angles = null;
-  }
+	// Create a Shape.
+	public Shape(int x, int y, int[][] points, String id) {
+		super(x, y, null, id);
+		this.points = points;
+	}
 }

@@ -107,7 +107,6 @@ public abstract class GLShape implements IGLShape {
 		disposed = true;
 	}
 	
-<<<<<<< HEAD
 	/**
 	 * Projection calculation
 	 */
@@ -132,8 +131,6 @@ public abstract class GLShape implements IGLShape {
 	}
 	
 	
-=======
->>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	public String id() {
 		return e_ID;
 	}
