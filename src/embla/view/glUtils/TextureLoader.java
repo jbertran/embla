@@ -1,5 +1,17 @@
 package embla.view.glUtils;
 
+<<<<<<< HEAD
+import java.awt.color.ColorSpace;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+
+import de.matthiasmann.twl.utils.PNGDecoder;
+import de.matthiasmann.twl.utils.PNGDecoder.Format;
+=======
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.color.ColorSpace;
@@ -20,6 +32,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.BufferUtils;
 
+>>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 import embla.view.glShapes.GLTexture;
 
 public class TextureLoader {
@@ -39,6 +52,19 @@ public class TextureLoader {
 	}
 	
 	public GLTexture loadTexture(String path) {
+<<<<<<< HEAD
+		InputStream in = new FileInputStream("white_pixel.png");
+		PNGDecoder decoder = new PNGDecoder(in);
+		 
+		System.out.println("width="+decoder.getWidth());
+		System.out.println("height="+decoder.getHeight());
+		 
+		ByteBuffer buf = ByteBuffer.allocateDirect(4*decoder.getWidth()*decoder.getHeight());
+		decoder.decode(buf, decoder.getWidth()*4, Format.RGBA);
+		buf.flip();
+		
+		return new GLTexture(decoder.getWidth(), decoder.getHeight(), path, buf);
+=======
 		
 		if (textures.get(path) != null)
 			return textures.get(path);
@@ -80,5 +106,6 @@ public class TextureLoader {
 		buffer.flip();
 		
 		return new GLTexture(texWidth, texHeight, rawdata.length, hasAlpha, buffer);
+>>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	}
 }

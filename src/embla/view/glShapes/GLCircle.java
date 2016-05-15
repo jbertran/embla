@@ -47,12 +47,19 @@ public class GLCircle extends GLShape implements IGLShape {
 	 * Our projection is brought back to a 2x2 square BL -1;-1 TR 1;1
 	 */
 	private void toProjection(int x, int y, int radius, Color c) {
+<<<<<<< HEAD
+		float glx = xToProjection(x);
+		float gly = yToProjection(y);
+		this.center = new float[]{ glx, gly }; 
+		this.radius = dToProjection(radius);
+=======
 		float glx = ((float) (2*x) / engine.width) - 1;
 		float gly = ((float) (2*y) / engine.height) - 1;
 		this.center = new float[]{ glx, gly }; 
 		this.radius = Math.min((float) radius / engine.width, (float) radius / engine.height);
 		System.out.println(center[0] + "," + center[1]);
 		System.out.println(this.radius);
+>>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		positionToVBO(getSlices());
 		colorToVBO(c);
 	}

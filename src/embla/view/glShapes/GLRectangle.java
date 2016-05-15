@@ -42,10 +42,17 @@ public class GLRectangle extends GLShape implements IGLShape {
 	
 	private void toProjection(int x, int y, int width, int height, Color c) {
 		float [] glpos = new float [8];
+<<<<<<< HEAD
+		float glw = wToProjection(width);
+		float glh = hToProjection(height);
+		float glx = xToProjection(x);
+		float gly = yToProjection(y);
+=======
 		float glw = ((float) (2*width) / engine.width);
 		float glh = ((float) (2*height) / engine.height);
 		float glx = ((float) (2*x) / engine.width) -1;
 		float gly = ((float) (2*y) / engine.width) -1;
+>>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 		glpos[0] = glx;
 		glpos[1] = gly;
 		glpos[2] = glx + glw;

@@ -15,4 +15,3 @@ pom.xml.asc
 *.log
 .DS_Store
 .nrepl-history
-/bin/

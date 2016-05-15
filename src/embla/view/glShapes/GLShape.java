@@ -107,6 +107,33 @@ public abstract class GLShape implements IGLShape {
 		disposed = true;
 	}
 	
+<<<<<<< HEAD
+	/**
+	 * Projection calculation
+	 */
+	protected float hToProjection(int h) {
+		return ((float) (2*h) / engine.height);
+	}
+	
+	protected float yToProjection(int y) {
+		return hToProjection(y) - 1;
+	}
+	
+	protected float wToProjection(int w) {
+		return ((float) (2*w) / engine.width);
+	}
+	
+	protected float xToProjection(int x) {
+		return wToProjection(x) - 1;
+	}
+	
+	protected float dToProjection(int d) {
+		return Math.min((float) d / engine.width, (float) d / engine.height);
+	}
+	
+	
+=======
+>>>>>>> e1f7bac4b3a009f807ccdee591f26ae24a6dd090
 	public String id() {
 		return e_ID;
 	}
