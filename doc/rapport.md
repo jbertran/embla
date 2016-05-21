@@ -117,10 +117,11 @@ On vérifie au passage si notre liste d' objets OpenGL <TODO: continuer>
 if (changes.isPresent()) {
 	for (Model modelch : changes.get()) {
 		GLShape s = glShapes.get(modelch.ID);
-			if (s != null)
-				s.propagate(modelch);
+		if (s != null)
+			s.propagate(modelch);
  		else
-				throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
+			throw new RuntimeException(
+				"Attempted to propagate changes to GLShape unknown to the engine");
 		}
 }
 // Redraw the scene
