@@ -62,9 +62,9 @@ avec le modèle
 
 ## Vue
 
-### Fonctionnement d'OpenGL
+### OpenGL - fonctionnement
 
-Le fonctionnement d'OpenGL est similaire à celui d'une machine à états. Pour 
+Le fonctionnement d'OpenGL est comparable à celui d'une machine à états. Pour 
 interagir avec des données spécifiques sur la carte graphique, il faut mettre 
 la machine à états OpenGL dans l'état correspondant. En particulier, en ce 
 qui concerne l'optimisation des transferts CPU/GPU, il est nécessaire de 
@@ -95,7 +95,30 @@ GL20.glUseProgram(0);
 
 ### Gestion des formes
 
-## Boucle de rendu
+Nos formes OpenGL servent donc uniquement à identifier les buffers présents
+sur la carte graphique, et à s'y référer pour chaque demande de rendu. Les 
+objets implémentant l'interface IGLShape contiennent quatre opérations capitales 
+pour la gestion des formes:
+
+* `java <position/color>ToVBO` traduisent: 
+	* les coordonnées 2D (x, y) sur la projection vue par l'utilisateur (dont
+	nous discutons plus haut) <TODO: Projection stuff> en coordonnées flottantes
+	à 4 dimensions sur la projection gérée par la machine OpenGL.
+	* les couleurs fournies par le modèle (concrètement de type java.AWT) en 
+	flottants représentant les 4 composantes d'une couleur RGBA.
+* `java bind<Color/Coordinates>` permettent de fournir à OpenGL un nouveau
+buffer position ou couleur, modifier en place les buffers de la carte graphique, et
+ainsi modifier la couleur ou la position de la forme.
+* `java toProjection` propose un accès après construction de l'objet à la logique de
+calcul des buffers qui doivent être transférés dans la carte graphique (notamment
+position et couleur). Cette opération est nécessaire pour obtenir la modification en
+place de ces buffers, au lieu d'en recréer de toutes pièces.
+* `java propagate` réalise l'appel à toProjection correspondant aux arguments
+de la classe concrète implémentant IGLShape, de manière à reconstruire les buffers 
+adéquats sur la carte graphique à partir des informations véhiculées par le noeud du
+modèle passé en argument.
+
+### Boucle de rendu
 
 Comme décrit dans la partie <TODO: numéroter>, la boucle de rendu d'OpenGL 
 est implémentée dans notre classe GameEngine. OpenGL requiert intrinsèquement 
@@ -110,7 +133,10 @@ parcourant l'arbre du modèle. Le rendu au fil du parcours de l'arbre nous perme
 garantir automatiquement les superpositions des formes en fonction de la profondeur 
 des formes.
 
-On vérifie au passage si notre liste d' objets OpenGL <TODO: continuer>
+On vérifie au passage si notre liste d' objets OpenGL concorde avec notre arbre de 
+formes du modèle, ce qui nous permet d'éviter les comportements indéfinis causés par 
+une éventuelle modification directe du modèle par l'utilisateur, en dehors du cadre 
+du DSL qui lui est fourni.
 
 ```java
 // Propagate model changes to GL buffers
