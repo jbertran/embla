@@ -61,3 +61,68 @@ avec le modèle
 ## Modèle
 
 ## Vue
+
+### Fonctionnement d'OpenGL
+
+Le fonctionnement d'OpenGL est similaire à celui d'une machine à états. Pour 
+interagir avec des données spécifiques sur la carte graphique, il faut mettre 
+la machine à états OpenGL dans l'état correspondant. En particulier, en ce 
+qui concerne l'optimisation des transferts CPU/GPU, il est nécessaire de 
+lier les buffers de flottants correspondant à nos données à la machine OpenGL
+avant de réaliser les opérations de dessin. Ceci nécéssite de conserver les 
+identifiants.
+
+Le dessin d'une forme simple se déroule comme ceci sur OpenGL:
+
+```java
+// Lier le shader program à la machine
+GL20.glUseProgram(shader_progid);
+// Lier l'ID du VAO enregistrant les buffers de la forme
+GL30.glBindVertexArray(vao_shapeid);
+// Lier l'ID du buffer positions à la machine
+GL20.glEnableVertexAttribArray(0);
+GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, summit_count);
+GL20.glDisableVertexAttribArray(0);
+// Lier l'ID du buffer couleur à la machine
+GL20.glEnableVertexAttribArray(1);
+GL11.glDrawArrays(GL11.GL_COLOR_ARRAY, 0, 1);
+GL20.glDisableVertexAttribArray(1);
+// Délier le VAO de la machine
+GL30.glBindVertexArray(0);
+// Délier le shader program de la machine
+GL20.glUseProgram(0);
+```
+
+### Gestion des formes
+
+## Boucle de rendu
+
+Comme décrit dans la partie <TODO: numéroter>, la boucle de rendu d'OpenGL 
+est implémentée dans notre classe GameEngine. OpenGL requiert intrinsèquement 
+de redessiner la scène à chaque tour de boucle, ce qui fait que notre approche
+pour minimiser les transferts vers la carte graphique est de vérifier quels objets
+ont changé dans la scène, et ne modifier que ceux-ci sur la carte graphique.
+
+Son mode de fonctionnement est de vérifier la présence de changements fournis après
+le parcours du modèle par les signaux, et répercuter ces modifications sur les 
+buffers de la carte graphique. On peut ensuite afficher la scène correctement, en 
+parcourant l'arbre du modèle. Le rendu au fil du parcours de l'arbre nous permet de 
+garantir automatiquement les superpositions des formes en fonction de la profondeur 
+des formes.
+
+On vérifie au passage si notre liste d' objets OpenGL <TODO: continuer>
+
+```java
+// Propagate model changes to GL buffers
+if (changes.isPresent()) {
+	for (Model modelch : changes.get()) {
+		GLShape s = glShapes.get(modelch.ID);
+			if (s != null)
+				s.propagate(modelch);
+ 		else
+				throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
+		}
+}
+// Redraw the scene
+draw_model_item(world);
+```
