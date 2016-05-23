@@ -1,7 +1,8 @@
-
-% PSTL \\ FRP et voyage dans le temps
-% Guillaume Hivert, Jordi Bertran de Balanda}
+% PSTL -- FRP et voyage dans le temps
+% Guillaume Hivert, Jordi Bertran de Balanda
 % 25 Mai 2016
+
+\newpage
 
 # Introduction
 
@@ -24,19 +25,38 @@ des comportements
 * Les mises à jour construisant les vues à partir du modèle, gérées de façon à
 émuler l'approche d'ELM et de React.
 
-## Sujet final
+## Outils utilisés
+
+* Clojure
+* Leiningen
+* Boot
+* Cider
+* GLFW
+* LWJGL
+* PNGDecoder
+* Eclipse/Emacs/Atom
+* Slack
+* GitHub
 
 # Ambitions
 
 ## Functional Reactive Programming
 
-### Définitions
-
 ## Gestion du modèle
 
 ## Live Coding
 
-# Embla
+## Abstraction graphique
+
+# Problèmes rencontrés <A RENOMMER>
+
+## Signaux & Callback Hell
+
+## Gestion du modèle
+
+# Embla 
+
+<Blabla EMbla :)>
 
 ## Vue d'ensemble
 
@@ -54,13 +74,17 @@ avec le modèle
   identifiants nécessaires pour redessiner les formes géométriques à partir des
   données déjà présentes sur la carte graphique.
 
-###
+#### Signaux
 
-## Signaux
+#### Modèle
 
-## Modèle
+#### Vue
 
-## Vue
+
+### Exécution
+
+<Super schéma>
+
 
 ### OpenGL - fonctionnement
 
@@ -100,20 +124,20 @@ sur la carte graphique, et à s'y référer pour chaque demande de rendu. Les
 objets implémentant l'interface IGLShape contiennent quatre opérations capitales 
 pour la gestion des formes:
 
-* `java <position/color>ToVBO` traduisent: 
+* `<position/color>ToVBO` traduisent: 
 	* les coordonnées 2D (x, y) sur la projection vue par l'utilisateur (dont
 	nous discutons plus haut) <TODO: Projection stuff> en coordonnées flottantes
 	à 4 dimensions sur la projection gérée par la machine OpenGL.
 	* les couleurs fournies par le modèle (concrètement de type java.AWT) en 
 	flottants représentant les 4 composantes d'une couleur RGBA.
-* `java bind<Color/Coordinates>` permettent de fournir à OpenGL un nouveau
+* `bind<Color/Coordinates>` permettent de fournir à OpenGL un nouveau
 buffer position ou couleur, modifier en place les buffers de la carte graphique, et
 ainsi modifier la couleur ou la position de la forme.
-* `java toProjection` propose un accès après construction de l'objet à la logique de
+* `toProjection` propose un accès après construction de l'objet à la logique de
 calcul des buffers qui doivent être transférés dans la carte graphique (notamment
 position et couleur). Cette opération est nécessaire pour obtenir la modification en
 place de ces buffers, au lieu d'en recréer de toutes pièces.
-* `java propagate` réalise l'appel à toProjection correspondant aux arguments
+* `propagate` réalise l'appel à toProjection correspondant aux arguments
 de la classe concrète implémentant IGLShape, de manière à reconstruire les buffers 
 adéquats sur la carte graphique à partir des informations véhiculées par le noeud du
 modèle passé en argument.
@@ -153,3 +177,17 @@ if (changes.isPresent()) {
 // Redraw the scene
 draw_model_item(world);
 ```
+
+<Dropping frames = nbd>
+
+# Bibliographie
+
+* Un grand merci à tous les anonymes de StackOverflow
+* Brave Clojure
+* ClojureDoc
+* Modern OpenGL, Anton ??
+* LWJGL wiki
+* Documentation LWJGL
+* Documentation GLFW
+* Code source de React
+* Thèse de ??? : ELM
