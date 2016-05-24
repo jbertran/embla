@@ -169,61 +169,162 @@ Une telle décision permet également de ne pas tomber dans le piège d'un callb
     (doseq [fun functions] (func msg))))
 ```
 
-_Dans cet exemple, lorsque signal reçoit une information, les fonctions de la liste functions sont exécutés séquentiellement._
+_Dans cet exemple, lorsque signal reçoit une information, les fonctions de la
+liste functions sont exécutés séquentiellement._
 
-En plus d'annihiler la possibilité de concurrence — puisqu'une fois l'information envoyée aux signaux abonnés, le scheduler se charge de répartir les calculs sur les différentes fonctions — cela peut rapidement aboutir à du "code spaghetti" avec des callback très nombreux. Par exemple, les codes Javascript de callback hell sont nombreux. La décision d'éviter de tomber dans cet écueil avec plusieurs signaux à donc été prise.
+En plus d'annihiler la possibilité de concurrence — puisqu'une fois
+l'information envoyée aux signaux abonnés, le scheduler se charge de répartir
+les calculs sur les différentes fonctions — cela peut rapidement aboutir à du
+"code spaghetti" avec des callback très nombreux. Par exemple, les codes
+Javascript de callback hell sont nombreux. La décision d'éviter de tomber dans
+cet écueil avec plusieurs signaux à donc été prise.
 
 ## Gestion du modèle
 
-Un problème majeur s'est posé lors de la gestion du modèle : puisque chaque fonction, une fois son signal reçu crée un nouveau modèle qui remplace l'ancien, comment s'assurer que les fonctions ne travaillent pas sur le même modèle, mais produisent bien différent modèles dans le temps. La décision de mettre un sémaphore sur le modèle a été prise. Ainsi, chaque fonction doit essayer de prendre le "contrôle" du modèle avant de pouvoir en créer un nouveau qui viendra le remplacer. Si cette fonction est en train de calculer le nouveau modèle, aucune fonction ne peut lire le modèle actuel. Elles devront attendre que la fonction de calcul ait fini de son travail et ait remplacé le modèle pour pouvoir agir. Ainsi, on peut s'assurer que le modèle est bien modifié à chaque fois, et qu'aucune modification ne se perds dans le temps.
+Un problème majeur s'est posé lors de la gestion du modèle : puisque chaque
+fonction, une fois son signal reçu crée un nouveau modèle qui remplace l'ancien,
+comment s'assurer que les fonctions ne travaillent pas sur le même modèle, mais
+produisent bien différent modèles dans le temps. La décision de mettre un
+sémaphore sur le modèle a été prise. Ainsi, chaque fonction doit essayer de
+prendre le "contrôle" du modèle avant de pouvoir en créer un nouveau qui viendra
+le remplacer. Si cette fonction est en train de calculer le nouveau modèle,
+aucune fonction ne peut lire le modèle actuel. Elles devront attendre que la
+fonction de calcul ait fini de son travail et ait remplacé le modèle pour
+pouvoir agir. Ainsi, on peut s'assurer que le modèle est bien modifié à chaque
+fois, et qu'aucune modification ne se perds dans le temps.
 
 # Embla
 
-Contrairement à d'autres langages comme Java, Clojure est très peu verbeux. De plus, les noms des projets ont rarement un rapport avec ce qu'il représente, mais se doivent d'être reconnaissables et faciles à retenir, comme Leiningen, Herbert, Alia, ou Catacumba. Pour le projet, Embla a été le nom retenu. Embla et Ask ("aulne" et "frêne") sont la première femme et le premier homme créés par Odin et ses frères Vili et Vé dans la mythologie nordique. Embla représente donc la naissance des êtres humains, tout comme elle représente la source de tout jeu OpenGL dans notre projet.
+Contrairement à d'autres langages comme Java, Clojure est très peu verbeux. De
+plus, les noms des projets ont rarement un rapport avec ce qu'il représente,
+mais se doivent d'être reconnaissables et faciles à retenir, comme Leiningen,
+Herbert, Alia, ou Catacumba. Pour le projet, Embla a été le nom retenu. Embla
+et Ask ("aulne" et "frêne") sont la première femme et le premier homme créés
+par Odin et ses frères Vili et Vé dans la mythologie nordique. Embla représente
+donc la naissance des êtres humains, tout comme elle représente la source de
+tout jeu OpenGL dans notre projet.
 
 ## Vue d'ensemble
 
 ### Architecture
 
-Notre application se divise en trois parties distinctes.
+Notre application se divise en quatre parties distinctes.
 
-* Du côté Clojure, la définition des macros permettant à l'utilisateur de construire le modèle et d'interagir avec celui-ci.
+* Du côté Clojure:
+    * La définition des macros permettant à l'utilisateur de
+    construire le modèle et d'interagir avec celui-ci.
+    * La définition des primitives de traitement des signaux.
 * Du côté Java :
-    * La définition du modèle structuré, prenant la forme d'un arbre de formes (les primitives de dessin en deux dimensions : rectangles, triangles, sprites...).
-    * Le pendant OpenGL du modèle, sous la forme d'un dictionnaire identifiant Embla / instance de classe forme OpenGL, qui ne sert qu'à retenir les identifiants nécessaires pour redessiner les formes géométriques à partir des données déjà présentes sur la carte graphique.
+    * La définition du modèle structuré, prenant la forme d'un arbre de formes
+    (les primitives de dessin en deux dimensions : rectangles, triangles,
+    sprites...).
+    * Le pendant OpenGL du modèle, sous la forme d'un dictionnaire identifiant
+    Embla / instance de classe forme OpenGL, qui ne sert qu'à retenir les
+    identifiants nécessaires pour redessiner les formes géométriques à partir
+    des données déjà présentes sur la carte graphique.
 
 #### Modèle
 
-Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose ensuite de n fils, puisque le monde peut être composé d'autant de personnages ou d'éléments que l'on souhaite sur une même surface. En effet, chaque élément du jeu est représenté par un noeud de l'arbre. Un personnage, un élément du jeu, ou un élément de décor sera représenté par un noeud.
+Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de
+l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose
+ensuite de n fils, puisque le monde peut être composé d'autant de personnages
+ou d'éléments que l'on souhaite sur une même surface. En effet, chaque élément
+du jeu est représenté par un noeud de l'arbre. Un personnage, un élément du jeu,
+ou un élément de décor sera représenté par un noeud.
 
-Dans un jeu à défilement horizontal, on peut imaginer que le noeud de l'arbre aura deux fils : le ciel et le sol. Le sol aura tous les objets reposant sur le sol comme fils, alors que le ciel aura comme fils toutes les objets reposant dans le ciel. Cela permet également de monter au niveau de détail désiré : un personnage peut avoir divers objets, chacun représenté par un fils. Et chaque objet peut lui-même avoir différentes caractéristiques.
+Dans un jeu à défilement horizontal, on peut imaginer que le noeud de l'arbre
+aura deux fils : le ciel et le sol. Le sol aura tous les objets reposant sur le
+sol comme fils, alors que le ciel aura comme fils toutes les objets reposant
+dans le ciel. Cela permet également de monter au niveau de détail désiré : un
+personnage peut avoir divers objets, chacun représenté par un fils. Et chaque
+objet peut lui-même avoir différentes caractéristiques.
 
-Enfin, les possibilités de modularité sont nombreuses : les noeuds de bases permettent de créer n'importe quel élément. En héritant de ces noeuds, on peut créer de nouveaux éléments, et lui attribuer n'importe quel caractéristique. On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut représenter n'importe quel élément.
+Enfin, les possibilités de modularité sont nombreuses : les noeuds de bases
+permettent de créer n'importe quel élément. En héritant de ces noeuds, on peut
+créer de nouveaux éléments, et lui attribuer n'importe quel caractéristique.
+On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux
+décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut
+représenter n'importe quel élément.
 
 ![Exemple d'affichage à partir du modèle](model_to_view.png
 "Exemple d'affichage à partir du modèle")
 
 #### Signaux
 
-Les signaux se décomposent en trois parties : les signaux de bases, les signaux composés, et les fonctions abonnés aux signaux.
+Les signaux se décomposent en trois parties : les signaux de bases, les signaux
+composés, et les fonctions abonnés aux signaux.
 
-Les signaux de bases — ou primitives — sont les briques de base du jeu. Le temps ou les entrées utilisateurs, notamment sont des primitives du jeu. L'utilisateur peut en créer, mais ne peut pas les détruire, et elles seront tout le temps disponibles. Des signaux comme la vie de son personnage ou les collisions peuvent être implémentés. Cela permet par la suite de bâtir de nouveaux signaux plus complexes.
+Les signaux de bases — ou primitives — sont les briques de base du jeu. Le temps
+ou les entrées utilisateurs, notamment sont des primitives du jeu. L'utilisateur
+peut en créer, mais ne peut pas les détruire, et elles seront tout le temps
+disponibles. Des signaux comme la vie de son personnage ou les collisions
+peuvent être implémentés. Cela permet par la suite de bâtir de nouveaux signaux
+plus complexes.
 
-Les signaux composés sont des signaux prenant en entrée deux signaux, et les combinant pour n'en former plus qu'un. Pour combiner ces deux signaux, une fonction se charge de réceptionner les informations des signaux en entrée, de calculer ce qui est nécessaire, puis d'émettre ce résultat sur le canal de sortie. Cela permet de bâtir le monde selon ses besoins, et de composer différents éléments pour en former un nouveau. Ainsi, deux signaux de collisions en entrée peuvent calculer si une collision à lieu par exemple, et émettre le signal correspondant.
+Les signaux composés sont des signaux prenant en entrée deux signaux, et les
+combinant pour n'en former plus qu'un. Pour combiner ces deux signaux, une
+fonction se charge de réceptionner les informations des signaux en entrée, de
+calculer ce qui est nécessaire, puis d'émettre ce résultat sur le canal de
+sortie. Cela permet de bâtir le monde selon ses besoins, et de composer
+différents éléments pour en former un nouveau. Ainsi, deux signaux de collisions
+en entrée peuvent calculer si une collision à lieu par exemple, et émettre le
+signal correspondant.
 
-Enfin, les fonctions abonnés aux signaux correspondent à la fin de la chaîne : une fois les signaux bâtis et fonctionnels, l'utilisateur peut y greffer des fonctions. Ces dernières vont lire le contenu de ces signaux, et agir en conséquence, pour créer un nouveau modèle. Elles sont donc le coeur du moteur, puisque ce sont elles qui modifient l'état du jeu. Ces fonctions peuvent faire ce qu'elles souhaitent, mais elles ne doivent pas créer de nouveaux signaux, ou réémettre sur les signaux de bases. Si elles émettent sur les signaux de base, le graphe de signaux devient cyclique, et le moteur peut tourner en boucle.
+Enfin, les fonctions abonnés aux signaux correspondent à la fin de la chaîne :
+une fois les signaux bâtis et fonctionnels, l'utilisateur peut y greffer des
+fonctions. Ces dernières vont lire le contenu de ces signaux, et agir en
+conséquence, pour créer un nouveau modèle. Elles sont donc le coeur du moteur,
+puisque ce sont elles qui modifient l'état du jeu. Ces fonctions peuvent faire
+ce qu'elles souhaitent, mais elles ne doivent pas créer de nouveaux signaux, ou
+réémettre sur les signaux de bases. Si elles émettent sur les signaux de base,
+le graphe de signaux devient cyclique, et le moteur peut tourner en boucle.
 
 <Schéma si tu es motivé. :D>
 
 #### Vue
 
-<Je te le laisse. :D>
+La "vue" Embla, ou encore la partie du moteur responsable de l'affichage
+proprement dit, est réalisée en Java plutôt qu'en Clojure pour faciliter
+l'utilisation de LWJGL.
+
+Les formes mises à disposition pour l'utilisateur sont implémentées sous la
+forme de sous-classes de `GLShape`, une classe abstraite contenant la majorité
+de la logique de gestion de la forme par OpenGL:
+* L'attribution des identifiants de VAO et VBO à la création de l'instance
+* La logique de mise à jour des buffers sur la carte graphique
+* La logique de transformation du repère classique orthonormé avec (0,0) situé
+sur le coin en haut à gauche avec lequel l'utilisateur définit les positions, en
+coordonnées du repère que l'on utilise dans OpenGL, avec (-1,-1) en bas à gauche
+et (1,1) en haut à droite.
+
+La gestion de ces formes est à vocation _strictement interne_ à Embla et doit
+correspondre en intégralité au modèle (en tout cas en termes de présence/absence
+de noeuds), de telle sorte que la gestion d'erreurs à ce niveau produit
+tout simplement des `RuntimeException`. En effet, ce genre d'erreur implique que
+l'utilisateur ait appelé des fonctions Clojure directement au lieu d'utiliser
+les macros qui lui sont fournies - qui elles garantissent la modification
+adéquate de la vue après avoir été traitées -, et on peut se permettre de
+terminer violemment le programme dans ce cas.
+
+La classe `GameEngine`, dans laquelle se trouve la boucle de rendu, représente
+l'endroit d'où un programme utilisant Embla est lancé. Elle contient toute la
+logique de création de la fenêtre dans laquelle on affiche le modèle.
 
 ### Exécution
 
 ![Schéma d'exécution](execution_flowchart.png "Schéma d'exécution")
 
-### OpenGL - fonctionnement
+La réception de signaux (ici `SigMove`, `SigEnemy`, `SigLife`) entraîne, après
+passage dans la fonction de mise à jour, la modification de noeuds du modèle.
+On accumule les modifications du modèle pour les passer à la partie de gestion
+du modèle d'Embla, qui met à jour le modèle courant et le modèle précédent.
+L'action de réaliser une diff du modèle a un effet de bord sur la "Vue", où la
+variable `changes` prévue à cette effet est mise à jour pour refléter les
+modifications du modèle. Ces modifications sont mises en oeuvre au tour de
+boucle de rendu suivant, en mettant à jour les formes OpenGL connues par le
+moteur de rendu dans la liste d'associations identifiant/forme `glShapes`.
+
+### OpenGL
 
 Le fonctionnement d'OpenGL est comparable à celui d'une machine à états. Pour
 interagir avec des données spécifiques sur la carte graphique, il faut mettre
@@ -256,10 +357,10 @@ GL20.glUseProgram(0);
 
 ### Gestion des formes
 
-Nos formes OpenGL servent donc uniquement à identifier les buffers présents
-sur la carte graphique, et à s'y référer pour chaque demande de rendu. Les
-objets implémentant l'interface IGLShape contiennent quatre opérations capitales
-pour la gestion des formes:
+Nos formes OpenGL servent uniquement à identifier les buffers présents sur la
+carte graphique, et à s'y référer pour chaque demande de rendu. Les objets
+implémentant l'interface IGLShape contiennent quatre opérations capitales pour
+la gestion des formes:
 
 * `<position/color>ToVBO` traduisent:
 	* les coordonnées 2D (x, y) sur la projection vue par l'utilisateur (dont
