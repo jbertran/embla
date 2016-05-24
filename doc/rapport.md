@@ -97,7 +97,7 @@ avec le modèle
 
 ### Exécution
 
-<Super schéma>
+![Schéma d'exécution](execution_flowchart.svg "Schéma d'exécution")
 
 
 ### OpenGL - fonctionnement
