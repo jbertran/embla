@@ -55,20 +55,71 @@ vise plus particulièrement les interfaces utilisateur graphiques (GUI)
 représentant une scène évoluant en fonction d'entrées provenant du monde
 extérieur.
 
-Il est important de noter l'aspect __déclaratif__ du modèle offert par le
+Il est important de noter l'aspect _déclaratif_ du modèle offert par le
 paradigme FRP dont ELM, l'exemple sur lequel se base notre approche, fait
 partie. Bien que les frameworks pour GUI usuels soient déclaratifs dans le sens
-général, la définition d'un nouvel élément à afficher à l'écran nécéssite que
+général, la définition d'un nouvel élément à afficher à l'écran nécessite que
 soient décrites de manière liées la façon dont l'élément interagit avec le reste
 de la scène.
 
+L'idée de la FRP est de proposer une manière de déclarer les comportements qui
+permettent de voir les valeurs mutables - positions, scores... - plutôt comme
+des valeurs _variant dans le temps_, ce qui est particulièrement adapté pour
+l'interface graphique appliquée au jeu vidéo. Ceci permet de travailler de
+manière beaucoup plus aisée et logique avec des langages fonctionnels "purs",
+où le concept de valeur mutable est généralement proscrit.
+
+Dans notre projet, nous ne limitons pas formellement à la FRP dite classique,
+qui était à l'origine destinée à l'animation, mais elle montre parfaitement le
+changement de paradigme entre la manière déclarative usuelle de coder une
+animation, et la manière proposée par la FRP en général. On dégage de cette
+manière, dans la FRP classique, deux types de valeurs: les comportements et les
+évènements.
+
+Les _comportements_ servent de remplacement pour valeurs mutables auxquelles un
+utilisateur d'une librairie de haut niveau actuelle (Qt, Swing...) est
+habitué.
+
+```
+Behavior 'a = Time -> 'a
+```
+
+Les _évènements_ représentent, eux, une suite d'évènements discrets avec
+(éventuellement) une information sur le temps auquel ils se déclenchent.
+
+```
+Event 'a = [(Time, 'a)]
+```
+
+On peut, à partir de ces deux types de valeurs, être très expressif quand aux
+comportements des objets décrits par ces signaux.
+
 ## Gestion du modèle
 
-Afin de pouvoir utiliser un modèle FRP, il est nécessaire de créer un monde de signaux de premier ordre. Ces signaux représentent l'intégralité des évènements de l'application.
-Dans un monde impératif, les signaux produisent une information — information reçue par des fonctions abonnées à ces signaux. Ces fonctions vont alors agir en conséquence sur le modèle par une suite d'effet de bord pour modifier l'état du modèle. Le modèle change constamment.
-A l'inverse, dans un monde purement fonctionnels, le modèle ne doit pas pouvoir être modifié. Chaque fonction, lors de son exécution, peut accéder au modèle, mais elle ne peut pas le modifier. Chaque fonction va alors recréer un modèle complet, correspondant au nouvel état du modèle. Chaque modèle est donc immutable, et il est possible de parcourir les différents états de ceux-ci.
+Afin de pouvoir utiliser un modèle FRP, il est nécessaire de créer un monde de
+signaux de premier ordre. Ces signaux représentent l'intégralité des évènements
+de l'application.
 
-Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signaux, les différents évènements ayant lieu lors du déroulement du jeu. Lorsque le joueur appuie sur une flèche du clavier pour faire avancer son personnage, le signal correspondant émet l'information correspondante. Les fonctions abonnés à ce signal vont alors recréer un nouvel état de jeu — à l'aide d'un nouveau modèle — correspondant à ce qui se déroule : en l'occurence, l'avancée du personnage. On disposera alors de deux modèles distincts, l'un représentant le monde au temps t, le second au temps t+1. Il est alors possible d'effectuer un "voyage dans le temps".
+Dans un monde impératif, les signaux produisent une information — information
+reçue par des fonctions abonnées à ces signaux. Ces fonctions vont alors agir en
+conséquence sur le modèle par une suite d'effet de bord pour modifier l'état du
+modèle. Le modèle change constamment.
+
+A l'inverse, dans un monde purement fonctionnels, le modèle ne doit pas pouvoir
+être modifié. Chaque fonction, lors de son exécution, peut accéder au modèle,
+mais elle ne peut pas le modifier. Chaque fonction va alors recréer un modèle
+complet, correspondant au nouvel état du modèle. Chaque modèle est donc
+immutable, et il est possible de parcourir les différents états de ceux-ci.
+
+Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signaux,
+les différents évènements ayant lieu lors du déroulement du jeu. Lorsque le
+joueur appuie sur une flèche du clavier pour faire avancer son personnage, le
+signal correspondant émet l'information correspondante. Les fonctions abonnés à
+ce signal vont alors recréer un nouvel état de jeu — à l'aide d'un nouveau
+modèle — correspondant à ce qui se déroule : en l'occurence, l'avancée du
+personnage. On disposera alors de deux modèles distincts, l'un représentant
+le monde au temps t, le second au temps t+1. Il est alors possible d'effectuer
+un "voyage dans le temps".
 
 ## Live Coding
 
@@ -119,16 +170,48 @@ donne également une plus grande liberté d'action.
 
 ## Modifications graphiques minimales
 
-Dans un souci de performances, il se révèle plus intéressant de placer les données graphiques dans la mémoire du GPU au démarrage du programme (ou d'un niveau par exemple, dans le cas d'un jeu), puis de ne plus avoir à y toucher : on minimise l'utilisation du bus mémoire pour faire transiter des données pouvant rapidement atteindre plusieurs centaines de Mio dans le cas de jeux haute définition ; et on réutilise un maximum les données en place dans la mémoire. De plus, les jeux réutilisent souvent les mêmes textures et les mêmes objets (un ennemi peut apparaître plusieurs fois, idem pour les arbres et autres éléments du décor).
-Pour faciliter cela, on souhaite donc charger et modifier des éléments le moins souvent possible au niveau de la carte graphique. Or, les différents modèles immutables contiennent tous l'information complète de la scène de jeu. Pour s'en abstraire, il a été envisagé d'effectuer un diff, à l'instar de React. Entre deux modèles, il est possible de comparer les différences entre eux, et en retenir uniquement l'information utile : ce qui a changé. Ce qui n'a pas changé n'a nul besoin d'être modifié, et ce qui a été changé va être modifié sur la carte graphique. L'état des objets qui ont été modifié est donc la seule information réellement utile.
+Dans un souci de performances, il se révèle plus intéressant de placer les
+données graphiques dans la mémoire du GPU au démarrage du programme (ou d'un
+niveau par exemple, dans le cas d'un jeu), puis de ne plus avoir à y toucher :
+on minimise l'utilisation du bus mémoire pour faire transiter des données
+pouvant rapidement atteindre plusieurs centaines de Mio dans le cas de jeux
+haute définition ; et on réutilise un maximum les données en place dans la
+mémoire. De plus, les jeux réutilisent souvent les mêmes textures et les mêmes
+objets (un ennemi peut apparaître plusieurs fois, idem pour les arbres et autres
+éléments du décor).
 
-# Problèmes rencontrés <A RENOMMER>
+Pour faciliter cela, on souhaite donc charger et modifier des éléments le moins
+souvent possible au niveau de la carte graphique. Or, les différents modèles
+immutables contiennent tous l'information complète de la scène de jeu. Pour s'en
+abstraire, il a été envisagé d'effectuer un diff, à l'instar de React. Entre
+deux modèles, il est possible de comparer les différences entre eux, et en
+retenir uniquement l'information utile : ce qui a changé. Ce qui n'a pas changé
+n'a nul besoin d'être modifié, et ce qui a été changé va être modifié sur la
+carte graphique. L'état des objets qui ont été modifié est donc la seule
+information réellement utile.
+
+# Questions rencontrées
 
 ## Signaux & Callback Hell
 
-La création d'un monde de signaux de premier ordre amène divers problèmes inhérents à la plateforme utilisée. Dans un programme Clojure, les signaux sont représentés sous formes de `channel`. Un canal supporte un nombre indéfinis d'écrivains et de lecteurs, mais également de lectures ou d'écritures. Ils fonctionnent comme une file d'attente : lorsqu'un écrivain écrit une valeur à l'intérieur de celui-ci, la valeur se place en attente. Dès qu'une valeur est en attente, si un lecteur peut la lire, il va alors la consommer, et la faire disparaître. Dans un monde de signaux, il serait souhaitable que lorsqu'un signal important, comme le mouvement par exemple, émette une information, toutes les fonctions de notre choix puisse intercepter cette information pour l'utiliser. Toutefois, au vu du modèle, la première fonction lisant la valeur privera les autres fonctions de celle-ci. Il faut donc une couche relai pour faire le lien entre la valeur du signal émis, et la réception de celle-ci par toutes les fonctions.
+La création d'un monde de signaux de premier ordre amène divers problèmes
+inhérents à la plateforme utilisée. Dans un programme Clojure, les signaux sont
+représentés sous formes de `channel`. Un canal supporte un nombre indéfinis
+d'écrivains et de lecteurs, mais également de lectures ou d'écritures. Ils
+fonctionnent comme une file d'attente : lorsqu'un écrivain écrit une valeur à
+l'intérieur de celui-ci, la valeur se place en attente. Dès qu'une valeur est
+en attente, si un lecteur peut la lire, il va alors la consommer, et la faire
+disparaître. Dans un monde de signaux, il serait souhaitable que lorsqu'un
+signal important, comme le mouvement par exemple, émette une information, toutes
+les fonctions de notre choix puisse intercepter cette information pour
+l'utiliser. Toutefois, au vu du modèle, la première fonction lisant la valeur
+privera les autres fonctions de celle-ci. Il faut donc une couche relai pour
+faire le lien entre la valeur du signal émis, et la réception de celle-ci par
+toutes les fonctions.
 
-Pour arriver à ce résultat, il faut donc associer, à chaque signal, une liste de signaux récepteurs. A chaque émission d'une information sur le signal, cette même information est dupliquée dans les signaux récepteurs :
+Pour arriver à ce résultat, il faut donc associer, à chaque signal, une liste de
+signaux récepteurs. A chaque émission d'une information sur le signal, cette
+même information est dupliquée dans les signaux récepteurs :
 
 ```clojure
 (defn broadcast-all
@@ -145,7 +228,9 @@ Pour arriver à ce résultat, il faut donc associer, à chaque signal, une liste
         (recur signals)))))
 ```
 
-Toutefois, pour qu'une fonction puisse s'abonner au signal qui l'intéresse, il a fallu également écrire une macro permettant d'effectuer ce processus sans que l'utilisateur ait à s'en soucier :
+Toutefois, pour qu'une fonction puisse s'abonner au signal qui l'intéresse, il
+a fallu également écrire une macro permettant d'effectuer ce processus sans que
+l'utilisateur ait à s'en soucier :
 
 ```clojure
 (defmacro defsigf
@@ -159,9 +244,17 @@ Toutefois, pour qu'une fonction puisse s'abonner au signal qui l'intéresse, il 
        (recur))))
 ```
 
-Cela permet à l'utilisateur, à l'intérieur de sa fonction abonné au signal qui l'intéresse, d'utiliser la variable `msg`, qui contient le message qui l'intéresse. Ainsi, chaque fonction définie par l'utilisateur peut s'abonner à un signal sans que cela ne consume les informations de ce signal au profit d'une autre fonction.
+Cela permet à l'utilisateur, à l'intérieur de sa fonction abonné au signal qui
+l'intéresse, d'utiliser la variable `msg`, qui contient le message qui
+l'intéresse. Ainsi, chaque fonction définie par l'utilisateur peut s'abonner à
+un signal sans que cela ne consume les informations de ce signal au profit d'une
+autre fonction.
 
-Une telle décision permet également de ne pas tomber dans le piège d'un callback hell. Une première solution envisagée était de pouvoir abonner différentes fonctions anonymes de callback à un signal, et lorsque celui-ci obtenait une information, il exécutait séquentiellement les fonctions une par une avec l'information en question.
+Une telle décision permet également de ne pas tomber dans le piège d'un callback
+hell. Une première solution envisagée était de pouvoir abonner différentes
+fonctions anonymes de callback à un signal, et lorsque celui-ci obtenait une
+information, il exécutait séquentiellement les fonctions une par une avec
+l'information en question.
 
 ```clojure
 (go-loop []
@@ -246,7 +339,7 @@ On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux
 décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut
 représenter n'importe quel élément.
 
-![Exemple d'affichage à partir du modèle](model_to_view.png
+![Exemple d'affichage à partir du modèle](resources/model_to_view.png
 "Exemple d'affichage à partir du modèle")
 
 #### Signaux
@@ -310,21 +403,7 @@ La classe `GameEngine`, dans laquelle se trouve la boucle de rendu, représente
 l'endroit d'où un programme utilisant Embla est lancé. Elle contient toute la
 logique de création de la fenêtre dans laquelle on affiche le modèle.
 
-### Exécution
-
-![Schéma d'exécution](execution_flowchart.png "Schéma d'exécution")
-
-La réception de signaux (ici `SigMove`, `SigEnemy`, `SigLife`) entraîne, après
-passage dans la fonction de mise à jour, la modification de noeuds du modèle.
-On accumule les modifications du modèle pour les passer à la partie de gestion
-du modèle d'Embla, qui met à jour le modèle courant et le modèle précédent.
-L'action de réaliser une diff du modèle a un effet de bord sur la "Vue", où la
-variable `changes` prévue à cette effet est mise à jour pour refléter les
-modifications du modèle. Ces modifications sont mises en oeuvre au tour de
-boucle de rendu suivant, en mettant à jour les formes OpenGL connues par le
-moteur de rendu dans la liste d'associations identifiant/forme `glShapes`.
-
-### OpenGL
+##### OpenGL
 
 Le fonctionnement d'OpenGL est comparable à celui d'une machine à états. Pour
 interagir avec des données spécifiques sur la carte graphique, il faut mettre
@@ -355,7 +434,7 @@ GL30.glBindVertexArray(0);
 GL20.glUseProgram(0);
 ```
 
-### Gestion des formes
+##### Gestion des formes
 
 Nos formes OpenGL servent uniquement à identifier les buffers présents sur la
 carte graphique, et à s'y référer pour chaque demande de rendu. Les objets
@@ -381,14 +460,21 @@ de la classe concrète implémentant IGLShape, de manière à reconstruire les
 buffers adéquats sur la carte graphique à partir des informations véhiculées par
 le noeud du modèle passé en argument.
 
-### Boucle de rendu
+##### Boucle de rendu
 
-Comme décrit dans la partie <TODO: numéroter>, la boucle de rendu d'OpenGL
-est implémentée dans notre classe GameEngine. OpenGL requiert intrinsèquement
-de redessiner la scène à chaque tour de boucle, ce qui fait que notre approche
-pour minimiser les transferts vers la carte graphique est de vérifier quels
-objets ont changé dans la scène, et ne modifier que ceux-ci sur la carte
-graphique.
+Une boucle d'affichage OpenGL procède de la manière suivante à chaque tour de
+boucle:
+
+1. Créer un buffer vide, le remplir d'une couleur de base prédéfinie.
+2. Placer dans ce buffer les informations relatives à ce qu'il faut afficher.
+3. Echanger le buffer actuellement affiché avec le buffer préparé.
+
+OpenGL requiert donc intrinsèquement de redessiner la scène à chaque tour de
+boucle, ce qui fait que notre approche de minimisation des opérations
+d'affichage doit avoir pour but de minimiser les transferts vers la carte
+graphique en vérifiant quels objets ont changé dans la scène, et ne modifier que
+ceux-ci sur la carte graphique. Autrement dit, on néglige le coût des appels
+de dessin au profit des
 
 Son mode de fonctionnement est de vérifier la présence de changements fournis
 après le parcours du modèle par les signaux, et répercuter ces modifications sur
@@ -427,11 +513,26 @@ l'arrivée d'un autre signal, le remplacement simple causerait un décalage
 entre la vue et le modèle jusqu'à la propagation réussie des modifications pour
 le noeud de modèle concerné.
 
+
+### Exécution
+
+![Schéma d'exécution](resources/execution_flowchart.png "Schéma d'exécution")
+
+La réception de signaux (ici `SigMove`, `SigEnemy`, `SigLife`) entraîne, après
+passage dans la fonction de mise à jour, la modification de noeuds du modèle.
+On accumule les modifications du modèle pour les passer à la partie de gestion
+du modèle d'Embla, qui met à jour le modèle courant et le modèle précédent.
+L'action de réaliser une diff du modèle a un effet de bord sur la "Vue", où la
+variable `changes` prévue à cette effet est mise à jour pour refléter les
+modifications du modèle. Ces modifications sont mises en oeuvre au tour de
+boucle de rendu suivant, en mettant à jour les formes OpenGL connues par le
+moteur de rendu dans la liste d'associations identifiant/forme `glShapes`.
+
 # Extensions
 
 A partir de l'itération actuelle d'Embla, aidés par l'architecture existante,
 nous pourrions imaginer certaines extensions que nous n'avons pas réalisé par
-soucis de temps et de complexité du programme. 
+soucis de temps et de complexité du programme.
 
 ## Acyclisme du graphe de signaux
 
@@ -454,6 +555,18 @@ de telles relations entre éléments.
 Quant au mode de définition de ces relations, on envisagerait plutôt une
 approche laissant l'utilisateur définir lui-même ce comportement, plutôt que
 de restreindre ceci à un comportement prédéfini.
+
+## Voyage dans le temps
+
+Ayant décidé de fournir comme exemple d'utilisation d'Embla le déplacement d'un
+personnage dans une scène, nous n'avons pas réalisé le "voyage dans le temps".
+Malgré cela, il serait aisé pour un utilisateur de le réaliser, étant donné
+qu'il suffit d'être capable de calculer l'inverse d'un signal à partir d'un
+signal pour réaliser ceci, modulo les opérations de création et de destruction,
+qui nous posent problème. Dans notre optique de réduction du moteur à
+l'essentiel, nous avons choisi de ne pas garder en mémoire les noeuds de modèle
+détruits pour des raisons de performance si une scène devient suffisemment
+compliquée.
 
 ## Brossage de crinière de poneys.
 
