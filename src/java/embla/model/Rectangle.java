@@ -12,4 +12,12 @@ public class Rectangle extends Model {
     this.height = height;
     this.color = color;
   }
+  
+  public boolean isEqual(Rectangle new) {
+    return (this.x == new.x &&
+	    this.y == new.y &&
+	    this.color == new.color &&
+	    this.width == new.width &&
+	    this.height == new.height);
+  }
 }

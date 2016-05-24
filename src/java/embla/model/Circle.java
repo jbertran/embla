@@ -11,4 +11,11 @@ public class Circle extends Model {
     this.radius = radius;
     this.color = c;
   }
+  
+  public boolean isEqual(Circle new) {
+    return (this.x == new.x &&
+	    this.y == new.y &&
+	    this.color == new.color &&
+	    this.radius == new.radius);
+  }
 }

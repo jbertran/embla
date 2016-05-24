@@ -61,19 +61,18 @@
   [name & code]
   (let [channel (chan)]
     (signal-register name channel)
-    `(let [~'msg 3]
-       ;;(go-loop []
-       ;;('p 'gom-sem)
-       ~@code
-       ;;('v 'gom-sem)
-       ;;('GOM/diff)
-       ;;)
-       )))
+    `(go-loop []
+       (let [~'msg (<! channel)]
+         (.acquire gom)
+         ~@code
+         (.release gom)
+         (.diff gom)))))
 
 (println custom-signals) 
 (macroexpand '(create-signal move))
 (search-signal "enemy")
 (macroexpand '(defsigf enemy
+                "truc"
                 (if (msg < 3)
                   (println "Gloups")
                   (println "Pas Gloups"))))

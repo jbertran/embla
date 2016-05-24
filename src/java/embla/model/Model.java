@@ -3,9 +3,13 @@ package embla.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.semaphore;
 
 // GOM of the world.
 public class Model {
+  // Mutex.
+  private final Semaphore mutex = new Semaphore(1);
+  
   // To parse the GOM.
   public final String ID;
   public String[] classes;
@@ -20,9 +24,6 @@ public class Model {
   // Every objects could have children.
   public ArrayList<Model> children;
 
-  // Boolean if the model has been changed.
-  private boolean changed;
-
   // Common constructors to all elements. May have or not classes or ID.
   public Model(int x, int y, String[] classes, String id) {
     this.x = x;
@@ -31,14 +32,18 @@ public class Model {
     this.ID = id;
     this.classes = classes;
     this.children = new ArrayList<>();
-    this.changed = false;
   }
 
   // Add the child to the children of the element.
   public void addChild(Model child) {
     this.children.add(child);
   }
-
+  
+  public boolean isEqual(Model new) {
+    return (this.x == new.x &&
+	    this.y == new.y &&);
+  }
+  
   // Every ID is unique => return exactly one element at most.
   public Optional<Model> getElementById(final String id) {
     if (this.ID.equals(id)) {
@@ -71,5 +76,15 @@ public class Model {
     }
 
     return stringReturn.toString();
+  }
+  
+    // Acquire the mutex.
+  public void acquire() {
+    mutex.acquire();
+  }
+  
+  // Release the mutex.
+  public void release() {
+    mutex.release();
   }
 }

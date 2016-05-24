@@ -2,7 +2,6 @@ package embla.utils;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.concurrent.semaphore;
 
 import embla.model.*;
 
@@ -14,8 +13,6 @@ public class GOM {
   // The world. Obviously.
   private Model world;
   
-  // Mutex.
-  private final Semaphore mutex = new Semaphore(1);
   
   // Create the world, and create the root.
   public GOM(String id) {
@@ -33,13 +30,8 @@ public class GOM {
 	  return world;
   }
   
-  // Acquire the mutex.
-  public void acquire() {
-    mutex.acquire();
-  }
   
-  // Release the mutex.
-  public void release() {
-    mutex.release();
+  public static void diff(GOM new) {
+    
   }
 }
