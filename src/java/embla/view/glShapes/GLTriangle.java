@@ -15,16 +15,16 @@ public class GLTriangle extends GLShape implements IGLShape {
 	float[] a;
 	float[] b;
 	float[] c;
-	
+
 	public GLTriangle(String e_ID, GameEngine engine, int[] a, int[] b, int[] c, Color col) {
 		super(e_ID, engine);
-		
+
 		// Bookkeeping general info
 		summit_count = 3;
-		
+
 		// Delegate color & position definition
 		toProjection(a, b, c, col);
-		
+
 		/** Set the VAO **/
 		GL30.glBindVertexArray(vao_shapeid);
 		// Positions -- data already bound. No touching!
@@ -58,7 +58,7 @@ public class GLTriangle extends GLShape implements IGLShape {
 		GL30.glBindVertexArray(0);
 		GL20.glUseProgram(0);
 	}
-	
+
 	private void toProjection(int[] a, int[] b, int[] c, Color col) {
 		float[] glpos = new float[6];
 		int i = 0;
@@ -70,7 +70,7 @@ public class GLTriangle extends GLShape implements IGLShape {
 		glpos[i++] = yToProjection(c[1]);
 		String p = "";
 		for (int j = 0; j < 6; j++)
-			p += glpos[j] + ", ";
+		p += glpos[j] + ", ";
 		System.out.println(p);
 		positionToVBO(glpos);
 		colorToVBO(col);
@@ -79,8 +79,8 @@ public class GLTriangle extends GLShape implements IGLShape {
 	@Override
 	public void propagate(Model m) {
 		if (m instanceof Triangle)
-			toProjection(((Triangle) m).a, ((Triangle) m).b, ((Triangle) m).c, m.color);
+		toProjection(((Triangle) m).a, ((Triangle) m).b, ((Triangle) m).c, m.color);
 		else
-			throw new RuntimeException("Model node / openGL draw call mismatch");
+		throw new RuntimeException("Model node / openGL draw call mismatch");
 	}
 }

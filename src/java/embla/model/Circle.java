@@ -12,10 +12,10 @@ public class Circle extends Model {
     this.color = c;
   }
   
-  public boolean isEqual(Circle new) {
-    return (this.x == new.x &&
-	    this.y == new.y &&
-	    this.color == new.color &&
-	    this.radius == new.radius);
+  public boolean isEqual(Circle old) {
+    return (this.x == old.x &&
+	    this.y == old.y &&
+	    this.color == old.color &&
+	    this.radius == old.radius);
   }
 }

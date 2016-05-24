@@ -58,6 +58,12 @@ de la scène et
 
 ## Gestion du modèle
 
+Afin de pouvoir utiliser un modèle FRP, il est nécessaire de créer un monde de signaux de premier ordre. Ces signaux représentent l'intégralité des évènements de l'application.
+Dans un monde impératif, les signaux produisent une information — information reçue par des fonctions abonnées à ces signaux. Ces fonctions vont alors agir en conséquence sur le modèle par une suite d'effet de bord pour modifier l'état du modèle. Le modèle change constamment.
+A l'inverse, dans un monde purement fonctionnels, le modèle ne doit pas pouvoir être modifié. Chaque fonction, lors de son exécution, peut accéder au modèle, mais elle ne peut pas le modifier. Chaque fonction va alors recréer un modèle complet, correspondant au nouvel état du modèle. Chaque modèle est donc immutable, et il est possible de parcourir les différents états de ceux-ci. 
+
+Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signaux, les différents évènements ayant lieu lors du déroulement du jeu. Lorsque le joueur appuie sur une flèche du clavier pour faire avancer son personnage, le signal correspondant émet l'information correspondante. Les fonctions abonnés à ce signal vont alors recréer un nouvel état de jeu — à l'aide d'un nouveau modèle — correspondant à ce qui se déroule : en l'occurence, l'avancée du personnage. On disposera alors de deux modèles distincts, l'un représentant le monde au temps t, le second au temps t+1. Il est alors possible d'effectuer un "voyage dans le temps".
+
 ## Live Coding
 
 ## Abstraction graphique

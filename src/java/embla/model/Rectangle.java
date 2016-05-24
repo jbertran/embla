@@ -13,11 +13,11 @@ public class Rectangle extends Model {
     this.color = color;
   }
   
-  public boolean isEqual(Rectangle new) {
-    return (this.x == new.x &&
-	    this.y == new.y &&
-	    this.color == new.color &&
-	    this.width == new.width &&
-	    this.height == new.height);
+  public boolean isEqual(Rectangle old) {
+    return (this.x == old.x &&
+	    this.y == old.y &&
+	    this.color == old.color &&
+	    this.width == old.width &&
+	    this.height == old.height);
   }
 }

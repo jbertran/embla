@@ -12,8 +12,7 @@ public class GOM {
 
   // The world. Obviously.
   private Model world;
-  
-  
+    
   // Create the world, and create the root.
   public GOM(String id) {
     this.world = new Model(-1, -1, null, id);
@@ -28,10 +27,5 @@ public class GOM {
   
   public Model root() {
 	  return world;
-  }
-  
-  
-  public static void diff(GOM new) {
-    
   }
 }

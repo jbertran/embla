@@ -15,12 +15,12 @@ public class GLConvexPolygon extends GLShape implements IGLShape{
 	@Override
 	public void propagate(Model m) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void render() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

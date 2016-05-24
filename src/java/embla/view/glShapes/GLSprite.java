@@ -16,27 +16,27 @@ import embla.view.glUtils.GameEngine;
 import embla.view.glUtils.TextureLoader;
 
 public class GLSprite extends GLShape implements IGLShape {
-	
+
 	private static final Color CLEAR_COLOR = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 	private TextureLoader loader;
 	private GLTexture texture = null;
 	private int vbo_texcoords;
 
 	public GLSprite(String e_ID, GameEngine engine, TextureLoader loader, String path,
-			int x, int y, int width, int height) {
+	int x, int y, int width, int height) {
 		super(e_ID, engine, "shaders/texture_vertex.glsl", "shaders/texture_fragment.glsl");
 		// Bookkeeping general info
 		summit_count = 4;
 		this.loader = loader;
-		
+
 		// Manage buffer contents
 		toProjection(x, y, width, height, path);
 		colorToVBO(CLEAR_COLOR);
 		setupTexCoords();
-		
+
 		/** Bind extra attribute for the shader program's texture input **/
 		GL20.glBindAttribLocation(shader_progid, 2, "in_TextureCoord");
-		
+
 		/** Set the VAO **/
 		GL30.glBindVertexArray(vao_shapeid);
 		// Positions -- data already bound. No touching!
@@ -60,7 +60,7 @@ public class GLSprite extends GLShape implements IGLShape {
 		// End
 		GL30.glBindVertexArray(0);
 	}
-	
+
 	private void toProjection(int x, int y, int width, int height, String path) {
 		// Update coordinates
 		float [] glpos = new float [8];
@@ -82,9 +82,9 @@ public class GLSprite extends GLShape implements IGLShape {
 		if (this.texture == null || !(this.texture.path().equals(path))) {
 			this.texture = loader.loadTexture(path);
 			this.texture.bindToGL();
-		}		
+		}
 	}
-	
+
 	private void setupTexCoords() {
 		vbo_texcoords = GL15.glGenBuffers();
 		float [] coords = new float [] { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
@@ -95,7 +95,7 @@ public class GLSprite extends GLShape implements IGLShape {
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
-	
+
 	@Override
 	public void render() {
 		GL20.glUseProgram(shader_progid);
@@ -128,8 +128,8 @@ public class GLSprite extends GLShape implements IGLShape {
 	@Override
 	public void propagate(Model m) {
 		if (m instanceof Sprite)
-			toProjection(m.x, m.y, ((Sprite) m).width, ((Sprite) m).height, ((Sprite) m).path);
+		toProjection(m.x, m.y, ((Sprite) m).width, ((Sprite) m).height, ((Sprite) m).path);
 		else
-			throw new RuntimeException("Model node / openGL draw call mismatch");
+		throw new RuntimeException("Model node / openGL draw call mismatch");
 	}
 }

@@ -9,9 +9,9 @@ public class Shape extends Model {
     this.points = points;
   }
   
-  public boolean isEqual(Shape new) {
-    return (this.x == new.x &&
-	    this.y == new.y &&
-	    this.points == new.points);
+  public boolean isEqual(Shape old) {
+    return (this.x == old.x &&
+	    this.y == old.y &&
+	    this.points == old.points);
   }
 }

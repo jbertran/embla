@@ -17,10 +17,10 @@
 (defmacro defgom
   "Creates the GOM. Full or Empty."
   ([name]
-   `(Model. -1 -1 nil "GOMRoot"))
+   `(Model. -1 -1 nil "root"))
   ([name & body]
    (let [sym (gensym)]
-     `(let [~sym (Model. -1 -1 nil "GOMRoot")]
+     `(let [~sym (Model. -1 -1 nil "root")]
         ~@(macroexpand `(add-children-list ~sym ~@body))
         ~sym))))
 

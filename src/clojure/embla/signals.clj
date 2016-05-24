@@ -68,26 +68,33 @@
          (.release gom)
          (.diff gom)))))
 
-(println custom-signals) 
+(println custom-signals)
 (macroexpand '(create-signal move))
 (search-signal "enemy")
 (macroexpand '(defsigf enemy
-                "truc"
                 (if (msg < 3)
                   (println "Gloups")
                   (println "Pas Gloups"))))
+
+(defmacro combine
+  [name1 name2 sig-name func]
+  (if (search-signal (.toString sig-name))
+    (throw (Exception. "Trying to create an already existent signal."))
+    (let [channel (chan)
+          sig1 (chan)
+          sig2 (chan)]
+      (signal-register name1 sig1)
+      (signal-register name2 sig2)
+      (go-loop []
+        (let [msg1 (<! sig1)
+              msg2 (<! sig2)]
+          (>! chan (func msg1 msg2))))
+      (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) custom (atom '())) %)))))
 
 (defsigf enemy
   (if (< msg 3)
     (println "Gloups")
     (println "Pas Gloups")))
-
-(defn defn-sig
-  "Func have to take one channel in parameter."
-  [name func]
-  (let [channel (chan)]
-    (func channel)
-    (signal-register name channel)))
 
 (defn broadcast-all
   "Transfer the value from the channel to all functions which need it."
@@ -100,51 +107,3 @@
           (map #(go (>! % msg)) output)))
       (if-not (empty? signals)
         (recur signals)))))
-
-;;; Historical purposes
-(comment
-  (defn combine1
-    "('a -> 'b) -> signal 'a -> signal 'b"
-    [func signal]
-    (go-loop []
-      (let [msg (<! signal)]
-        (<! (func msg)))
-      (recur)))
-
-  (defn combine2
-    "('a -> 'b -> 'c) -> signal 'a -> signal 'b -> signal 'c"
-    [func sig1 sig2]
-    (go-loop []
-      (let [fst (<! sig1)
-            sec (<! sig2)]
-        (<! (func fst sec)))
-      (recur)))
-
-  (defn combine
-    "Generates an async channel listening for signals
-  and applying func to their outputs"
-    [func & signals]
-    (def signal-count (atom 0))
-    (let [signal-out (chan)
-          siglist-size (count signals)
-          ;; [atom signal] vector, pass atom to go for each signal
-          siglist (map (fn [s] (vector (atom nil) s)) signals)]
-      ;; Define a waiting function for each sig in the argument list
-      ;; => (count signals) waiting processes
-      (loop [loop-list siglist]
-        (if (empty? loop-list)
-          signal-out)
-        (let [[sig & sigs-recur] loop-list]
-          (go
-            (let [msg (<! (second sig))
-                  storage (first sig)]
-              ;; if msg's first arrival, inc signal-count
-              (if (nil? storage)
-                (swap! signal-count inc))
-              ;; Put signal in its place either way
-              (swap! storage (fn [x] msg))
-              ;; If the signal has sufficient arguments, send it.
-              (if (= @signal-count siglist-size)
-                (>! signal-out (apply func (map siglist (fn [x] (@(first x)))))))))
-          (recur sigs-recur)))))
-  )

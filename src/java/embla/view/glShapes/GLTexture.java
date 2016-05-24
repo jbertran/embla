@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
 public class GLTexture {
-	
+
 	private static final int TARGET = GL11.GL_TEXTURE_2D;
 	private static final int FILTER = GL11.GL_NEAREST;
 	private static final int WRAP = GL12.GL_CLAMP_TO_EDGE;
@@ -17,7 +17,7 @@ public class GLTexture {
 	int texID;
 	public int width, height;
 	FloatBuffer texData;
-	
+
 	public GLTexture(int width, int height, String path, FloatBuffer texData) {
 		this.texID = GL11.glGenTextures();
 		this.texData = texData;
@@ -25,19 +25,19 @@ public class GLTexture {
 		this.height = height;
 		this.path = path;
 	}
-	
+
 	public void bind() {
 		GL11.glBindTexture(TARGET, texID);
 	}
-	
+
 	public void unbind() {
 		GL11.glBindTexture(TARGET, 0);
 	}
-	
+
 	public String path() {
 		return path;
 	}
-	
+
 	public void bindToGL() {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(TARGET, texID);

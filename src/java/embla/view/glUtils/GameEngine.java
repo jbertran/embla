@@ -97,12 +97,12 @@ public class GameEngine {
 	}
 
 	public void init() {
-		// Setup an error callback. 
+		// Setup an error callback.
 		glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if ( glfwInit() != GLFW_TRUE )
-			throw new IllegalStateException("Unable to initialize GLFW");
+		throw new IllegalStateException("Unable to initialize GLFW");
 
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -112,14 +112,14 @@ public class GameEngine {
 		// Create the window
 		window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
 		if ( window == NULL )
-			throw new RuntimeException("Failed to create the GLFW window");
+		throw new RuntimeException("Failed to create the GLFW window");
 
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
 			@Override
 			public void invoke(long window, int key, int scancode, int action, int mods) {
 				if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-					glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
+				glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
 			}
 		});
 
@@ -127,10 +127,10 @@ public class GameEngine {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		// Center our window
 		glfwSetWindowPos(
-				window,
-				(vidmode.width() - width) / 2,
-				(vidmode.height() - height) / 2
-				);
+		window,
+		(vidmode.width() - width) / 2,
+		(vidmode.height() - height) / 2
+		);
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 		// Enable v-sync
@@ -170,7 +170,7 @@ public class GameEngine {
 		GLCircle circ = new GLCircle("circ", this, width/2, height/2, height/3, Color.yellow);
 		GLTriangle tri = new GLTriangle("tri", this, new int[] {0, 0}, new int[]{width/2, height}, new int[]{width, 0}, Color.blue);
 		GLSprite sprite = new GLSprite("sprite", this, this.loader, "resources/link.gif", 0, height, width/8, height/8);
-		
+
 		glShapes.put(rect.id(), rect);
 		glShapes.put(circ.id(), circ);
 		glShapes.put(tri.id(), tri);
@@ -181,8 +181,8 @@ public class GameEngine {
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 				/**
-				 * draw the model with OpenGL, including changes if applicable
-				 */
+				* draw the model with OpenGL, including changes if applicable
+				*/
 				redraw();
 
 				GLFW.glfwSwapBuffers(window); // swap the color buffers
@@ -203,9 +203,9 @@ public class GameEngine {
 			for (Model modelch : changes.get()) {
 				GLShape s = glShapes.get(modelch.ID);
 				if (s != null)
-					s.propagate(modelch);
+				s.propagate(modelch);
 				else
-					throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
+				throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
 			}
 		}
 		// Redraw the scene
@@ -216,17 +216,17 @@ public class GameEngine {
 		// Draw the item
 		GLShape s = glShapes.get(mod.ID);
 		if (mod.ID.equals("root"))
-			draw_children(mod);
+		draw_children(mod);
 		else if (s != null) {
 			s.render();
 			draw_children(mod);
 		}
 		else
-			throw new RuntimeException("Attempted to render GLShape not known to the engine");
+		throw new RuntimeException("Attempted to render GLShape not known to the engine");
 	}
 
 	private void draw_children(Model mod) {
 		for (Model m : mod.children)
-			draw_model_item(m);
+		draw_model_item(m);
 	}
 }

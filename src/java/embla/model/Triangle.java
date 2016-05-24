@@ -12,11 +12,11 @@ public class Triangle extends Model {
     this.c = c;
   }
   
-  public boolean isEqual(Triangle new) {
-    return (this.x == new.x &&
-	    this.y == new.y &&
-	    this.a == new.a &&
-	    this.b == new.b &&
-	    this.c == new.c);
+  public boolean isEqual(Triangle old) {
+    return (this.x == old.x &&
+	    this.y == old.y &&
+	    this.a == old.a &&
+	    this.b == old.b &&
+	    this.c == old.c);
   }
 }

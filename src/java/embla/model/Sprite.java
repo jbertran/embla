@@ -11,11 +11,11 @@ public class Sprite extends Model {
     this.path = path;
   }
   
-  public boolean isEqual(Sprite new) {
-    return (this.x == new.x &&
-	    this.y == new.y &&
-	    this.width == new.width &&
-	    this.height == new.height &&
-	    this.path == new.path);
+  public boolean isEqual(Sprite old) {
+    return (this.x == old.x &&
+	    this.y == old.y &&
+	    this.width == old.width &&
+	    this.height == old.height &&
+	    this.path == old.path);
   }
 }
