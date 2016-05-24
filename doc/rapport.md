@@ -42,6 +42,10 @@ des comportements
 
 # Ambitions
 
+Pour explorer le sujet, nous avons décidé de nous donner comme but d'arriver à
+fournir un moteur de rendu qui mette en jeu autant de concepts évoqués ci-après
+que possible.
+
 ## Functional Reactive Programming
 
 Le terme Functional Reactive Programming (FRP ci-après) décrit un paradigme de
@@ -56,38 +60,76 @@ paradigme FRP dont ELM, l'exemple sur lequel se base notre approche, fait
 partie. Bien que les frameworks pour GUI usuels soient déclaratifs dans le sens
 général, la définition d'un nouvel élément à afficher à l'écran nécéssite que
 soient décrites de manière liées la façon dont l'élément interagit avec le reste
-de la scène et
+de la scène.
 
 ## Gestion du modèle
 
 Afin de pouvoir utiliser un modèle FRP, il est nécessaire de créer un monde de signaux de premier ordre. Ces signaux représentent l'intégralité des évènements de l'application.
 Dans un monde impératif, les signaux produisent une information — information reçue par des fonctions abonnées à ces signaux. Ces fonctions vont alors agir en conséquence sur le modèle par une suite d'effet de bord pour modifier l'état du modèle. Le modèle change constamment.
-A l'inverse, dans un monde purement fonctionnels, le modèle ne doit pas pouvoir être modifié. Chaque fonction, lors de son exécution, peut accéder au modèle, mais elle ne peut pas le modifier. Chaque fonction va alors recréer un modèle complet, correspondant au nouvel état du modèle. Chaque modèle est donc immutable, et il est possible de parcourir les différents états de ceux-ci. 
+A l'inverse, dans un monde purement fonctionnels, le modèle ne doit pas pouvoir être modifié. Chaque fonction, lors de son exécution, peut accéder au modèle, mais elle ne peut pas le modifier. Chaque fonction va alors recréer un modèle complet, correspondant au nouvel état du modèle. Chaque modèle est donc immutable, et il est possible de parcourir les différents états de ceux-ci.
 
 Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signaux, les différents évènements ayant lieu lors du déroulement du jeu. Lorsque le joueur appuie sur une flèche du clavier pour faire avancer son personnage, le signal correspondant émet l'information correspondante. Les fonctions abonnés à ce signal vont alors recréer un nouvel état de jeu — à l'aide d'un nouveau modèle — correspondant à ce qui se déroule : en l'occurence, l'avancée du personnage. On disposera alors de deux modèles distincts, l'un représentant le monde au temps t, le second au temps t+1. Il est alors possible d'effectuer un "voyage dans le temps".
 
 ## Live Coding
 
-Dans un souci de simplicité, et de coller à l'esprit Clojure, l'un des buts de ce projet était également de fournir une interface interactive, type REPL (Read-Eval-Print-Loop), afin de pouvoir développer dynamiquement. 
-Dans un paradigme de développement classique, l'utilisateur écrit son programme à l'aide d'un éditeur de texte ou d'un autre outil, puis le compile et l'exécute (ou l'interprète immédiatement). La compilation peut alors relever des bogues, ainsi que l'exécution. Le développeur retourne alors à son éditeur de texte pour déboguer son programme.
-Dans un paradigme de live coding, l'utilisateur est amené à écrire son programme dans un éditeur de texte, puis l'exécuter immédiatement. Le code écrit va ainsi être exécuté à la volée, et les conséquences sont immédiatement visibles. Il n'y a plus de séparation entre la phase d'écriture et la phase d'exécution : les deux sont intimement liées. La mise en place d'un REPL permet d'abonder en ce sens : une fois le programme lancé, une boucle d'interaction s'affiche, permettant de rentrer des commandes et de continuer à développer le programme, même si celui-ci est encore en train de fonctionner. Ce concept ressemble fortement au débogueur inclus par défaut dans la majorité des distributions de Common Lisp, capable d'interrompre le programme au premier bogue pour réécrire le code dynamiquement.
+Dans un souci de simplicité, et de coller à l'esprit Clojure, l'un des buts de
+ce projet était également de fournir une interface interactive, type REPL
+(Read-Eval-Print-Loop), afin de pouvoir développer dynamiquement.
+Dans un paradigme de développement classique, l'utilisateur écrit son programme
+à l'aide d'un éditeur de texte ou d'un autre outil, puis le compile et l'exécute
+(ou l'interprète immédiatement). La compilation peut alors relever des bogues,
+ainsi que l'exécution. Le développeur retourne alors à son éditeur de texte pour
+déboguer son programme.
+Dans un paradigme de live coding, l'utilisateur est amené à écrire son programme
+dans un éditeur de texte, puis l'exécuter immédiatement. Le code écrit va ainsi
+être exécuté à la volée, et les conséquences sont immédiatement visibles. Il n'y
+a plus de séparation entre la phase d'écriture et la phase d'exécution : les
+deux sont intimement liées. La mise en place d'un REPL permet d'abonder en ce
+sens : une fois le programme lancé, une boucle d'interaction s'affiche,
+permettant de rentrer des commandes et de continuer à développer le programme,
+même si celui-ci est encore en train de fonctionner. Ce concept ressemble
+fortement au débogueur inclus par défaut dans la majorité des distributions de
+Common Lisp, capable d'interrompre le programme au premier bogue pour réécrire
+le code dynamiquement.
 
 ## Abstraction graphique
 
-<Je te le laisse. :D>
+L'ambition principale étant de fournir un moteur de rendu _utilisable_, une des
+contraintes est de fournir un résultat dont l'emploi soit facile. On désire donc
+éviter de conserver le niveau d'abstraction que fournit OpenGL, c'est-à-dire de
+réaliser une surcouche relativement épaisse d'OpenGL qui nous permette d'ignorer
+les difficultés de gestion de la machine à états (définition des buffers,
+passage de flottants correctement ordonnés à la carte graphique, modes de dessin
+correspondants, etc...) pour fournir un mode de fonctionnement plus
+immédiatement abordable, avec des formes simples et des mécanismes d'affichage
+simplifiés à l'extrême.
+On s'établit donc comme but d'abstraction graphique d'émuler une partie du
+comportement d'une bibliothèque relativement bas niveau comme la SDL.
+
+Ce parti pris est pour nous un compromis raisonnable entre la trop grande
+complexité d'OpenGL pour l'utilisateur final, et le trop grand nombre de parti
+pris sur l'approche d'affichage et de gestion d'une bibliothèque de GUI haut
+niveau comme par exemple Qt ou Swing. Il faut noter qu'en ce sens, nous voulons
+éviter au maximum d'imposer à l'utilisateur quoi que ce soit pour le
+comportement des éléments qu'il veut afficher à l'écran, de manière à lui
+laisser le soin de lui-même décrire les comportements qu'il désire. Ceci lui
+laisse une charge plus importante que dans un moteur plus haut niveau, mais lui
+donne également une plus grande liberté d'action.
+
 
 ## Modifications graphiques minimales
 
-Dans un souci de performances, il se révèle plus intéressant de placer les données graphiques dans la mémoire du GPU au démarrage du programme (ou d'un niveau par exemple, dans le cas d'un jeu), puis de ne plus avoir à y toucher : on minimise l'utilisation du bus mémoire pour faire transiter des données pouvant rapidement atteindre plusieurs centaines de Mio dans le cas de jeux haute définition ; et on réutilise un maximum les données en place dans la mémoire. De plus, les jeux réutilisent souvent les mêmes textures et les mêmes objets (un ennemi peut apparaître plusieurs fois, idem pour les arbres et autres éléments du décor). 
+Dans un souci de performances, il se révèle plus intéressant de placer les données graphiques dans la mémoire du GPU au démarrage du programme (ou d'un niveau par exemple, dans le cas d'un jeu), puis de ne plus avoir à y toucher : on minimise l'utilisation du bus mémoire pour faire transiter des données pouvant rapidement atteindre plusieurs centaines de Mio dans le cas de jeux haute définition ; et on réutilise un maximum les données en place dans la mémoire. De plus, les jeux réutilisent souvent les mêmes textures et les mêmes objets (un ennemi peut apparaître plusieurs fois, idem pour les arbres et autres éléments du décor).
 Pour faciliter cela, on souhaite donc charger et modifier des éléments le moins souvent possible au niveau de la carte graphique. Or, les différents modèles immutables contiennent tous l'information complète de la scène de jeu. Pour s'en abstraire, il a été envisagé d'effectuer un diff, à l'instar de React. Entre deux modèles, il est possible de comparer les différences entre eux, et en retenir uniquement l'information utile : ce qui a changé. Ce qui n'a pas changé n'a nul besoin d'être modifié, et ce qui a été changé va être modifié sur la carte graphique. L'état des objets qui ont été modifié est donc la seule information réellement utile.
 
 # Problèmes rencontrés <A RENOMMER>
 
 ## Signaux & Callback Hell
 
-La création d'un monde de signaux de premier ordre amène divers problèmes inhérents à la plateforme utilisée. Dans un programme Clojure, les signaux sont représentés sous formes de `channel`. Un canal supporte un nombre indéfinis d'écrivains et de lecteurs, mais également de lectures ou d'écritures. Ils fonctionnent comme une file d'attente : lorsqu'un écrivain écrit une valeur à l'intérieur de celui-ci, la valeur se place en attente. Dès qu'une valeur est en attente, si un lecteur peut la lire, il va alors la consumer, et la faire disparaître. Dans un monde de signaux, il serait souhaitable que lorsqu'un signal important, comme le mouvement par exemple, émette une information, toutes les fonctions de notre choix puisse intercepter cette information pour l'utiliser. Toutefois, au vu du modèle, la première fonction lisant la valeur privera les autres fonctions de celle-ci. Il faut donc une couche relai pour faire le lien entre la valeur du signal émis, et la réception de celle-ci par toutes les fonctions.
+La création d'un monde de signaux de premier ordre amène divers problèmes inhérents à la plateforme utilisée. Dans un programme Clojure, les signaux sont représentés sous formes de `channel`. Un canal supporte un nombre indéfinis d'écrivains et de lecteurs, mais également de lectures ou d'écritures. Ils fonctionnent comme une file d'attente : lorsqu'un écrivain écrit une valeur à l'intérieur de celui-ci, la valeur se place en attente. Dès qu'une valeur est en attente, si un lecteur peut la lire, il va alors la consommer, et la faire disparaître. Dans un monde de signaux, il serait souhaitable que lorsqu'un signal important, comme le mouvement par exemple, émette une information, toutes les fonctions de notre choix puisse intercepter cette information pour l'utiliser. Toutefois, au vu du modèle, la première fonction lisant la valeur privera les autres fonctions de celle-ci. Il faut donc une couche relai pour faire le lien entre la valeur du signal émis, et la réception de celle-ci par toutes les fonctions.
 
 Pour arriver à ce résultat, il faut donc associer, à chaque signal, une liste de signaux récepteurs. A chaque émission d'une information sur le signal, cette même information est dupliquée dans les signaux récepteurs :
+
 ```clojure
 (defn broadcast-all
   "Transfer the value from the channel to all functions which need it."
@@ -102,7 +144,9 @@ Pour arriver à ce résultat, il faut donc associer, à chaque signal, une liste
       (if-not (empty? signals)
         (recur signals)))))
 ```
+
 Toutefois, pour qu'une fonction puisse s'abonner au signal qui l'intéresse, il a fallu également écrire une macro permettant d'effectuer ce processus sans que l'utilisateur ait à s'en soucier :
+
 ```clojure
 (defmacro defsigf
   "Define a function registered to the signal."
@@ -114,15 +158,18 @@ Toutefois, pour qu'une fonction puisse s'abonner au signal qui l'intéresse, il 
          ~@code
        (recur))))
 ```
+
 Cela permet à l'utilisateur, à l'intérieur de sa fonction abonné au signal qui l'intéresse, d'utiliser la variable `msg`, qui contient le message qui l'intéresse. Ainsi, chaque fonction définie par l'utilisateur peut s'abonner à un signal sans que cela ne consume les informations de ce signal au profit d'une autre fonction.
 
-Une telle décision permet également de ne pas tomber dans le piège d'un callback hell. Une première solution envisagée était de pouvoir abonner différentes fonctions anonymes de callback à un signal, et lorsque celui-ci obtenait une information, il exécutait séquentiellement les fonctions une par une avec l'information en question. 
+Une telle décision permet également de ne pas tomber dans le piège d'un callback hell. Une première solution envisagée était de pouvoir abonner différentes fonctions anonymes de callback à un signal, et lorsque celui-ci obtenait une information, il exécutait séquentiellement les fonctions une par une avec l'information en question.
+
 ```clojure
 (go-loop []
   (let [msg (<! signal)]
     (doseq [fun functions] (func msg))))
 ```
-*Dans cet exemple, lorsque signal reçoit une information, les fonctions de la liste functions sont exécutés séquentiellement.*
+
+_Dans cet exemple, lorsque signal reçoit une information, les fonctions de la liste functions sont exécutés séquentiellement._
 
 En plus d'annihiler la possibilité de concurrence — puisqu'une fois l'information envoyée aux signaux abonnés, le scheduler se charge de répartir les calculs sur les différentes fonctions — cela peut rapidement aboutir à du "code spaghetti" avec des callback très nombreux. Par exemple, les codes Javascript de callback hell sont nombreux. La décision d'éviter de tomber dans cet écueil avec plusieurs signaux à donc été prise.
 
@@ -147,19 +194,20 @@ Notre application se divise en trois parties distinctes.
 
 #### Modèle
 
-Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose ensuite de n fils, puisque le monde peut être composé d'autant de personnages ou d'éléments que l'on souhaite sur une même surface. En effet, chaque élément du jeu est représenté par un noeud de l'arbre. Un personnage, un élément du jeu, ou un élément de décor sera représenté par un noeud. 
+Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose ensuite de n fils, puisque le monde peut être composé d'autant de personnages ou d'éléments que l'on souhaite sur une même surface. En effet, chaque élément du jeu est représenté par un noeud de l'arbre. Un personnage, un élément du jeu, ou un élément de décor sera représenté par un noeud.
 
 Dans un jeu à défilement horizontal, on peut imaginer que le noeud de l'arbre aura deux fils : le ciel et le sol. Le sol aura tous les objets reposant sur le sol comme fils, alors que le ciel aura comme fils toutes les objets reposant dans le ciel. Cela permet également de monter au niveau de détail désiré : un personnage peut avoir divers objets, chacun représenté par un fils. Et chaque objet peut lui-même avoir différentes caractéristiques.
 
 Enfin, les possibilités de modularité sont nombreuses : les noeuds de bases permettent de créer n'importe quel élément. En héritant de ces noeuds, on peut créer de nouveaux éléments, et lui attribuer n'importe quel caractéristique. On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut représenter n'importe quel élément.
 
-<Tu me fais un schéma de l'arbre ? Un truc bâteau. :D>
+![Exemple d'affichage à partir du modèle](model_to_view.png
+"Exemple d'affichage à partir du modèle")
 
 #### Signaux
 
 Les signaux se décomposent en trois parties : les signaux de bases, les signaux composés, et les fonctions abonnés aux signaux.
 
-Les signaux de bases — ou primitives — sont les briques de base du jeu. Le temps ou les entrées utilisateurs, notamment sont des primitives du jeu. L'utilisateur peut en créer, mais ne peut pas les détruire, et elles seront tout le temps disponibles. Des signaux comme la vie de son personnage ou les collisions peuvent être implémentés. Cela permet par la suite de bâtir de nouveaux signaux plus complexes. 
+Les signaux de bases — ou primitives — sont les briques de base du jeu. Le temps ou les entrées utilisateurs, notamment sont des primitives du jeu. L'utilisateur peut en créer, mais ne peut pas les détruire, et elles seront tout le temps disponibles. Des signaux comme la vie de son personnage ou les collisions peuvent être implémentés. Cela permet par la suite de bâtir de nouveaux signaux plus complexes.
 
 Les signaux composés sont des signaux prenant en entrée deux signaux, et les combinant pour n'en former plus qu'un. Pour combiner ces deux signaux, une fonction se charge de réceptionner les informations des signaux en entrée, de calculer ce qui est nécessaire, puis d'émettre ce résultat sur le canal de sortie. Cela permet de bâtir le monde selon ses besoins, et de composer différents éléments pour en former un nouveau. Ainsi, deux signaux de collisions en entrée peuvent calculer si une collision à lieu par exemple, et émettre le signal correspondant.
 
@@ -280,9 +328,11 @@ le noeud de modèle concerné.
 
 # Extensions
 
-Vérifier l'acyclisme du graphe de signaux.
+## Acyclisme du graphe de signaux
 
-Brosser la crinière des poneys.
+## Hiérarchie des zones de dessin
+
+## Brossage de crinière de poneys.
 
 \newpage
 

@@ -63,7 +63,7 @@ public class GameEngine {
 
 	private HashMap<String, GLShape> glShapes;
 	private TextureLoader loader = new TextureLoader();
-	private Optional<Model[]> changes;
+	private Optional<HashMap<String, Model>> changes;
 	private Model world;
 	public int width, height;
 
