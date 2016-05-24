@@ -1,1 +1,4 @@
 (boot (build))
+(boot (run_file))
+(boot (run_file "fuierhguih"))
+(boot (build))

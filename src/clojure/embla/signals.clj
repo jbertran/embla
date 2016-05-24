@@ -11,7 +11,6 @@
 (def keyboard-input (chan))
 (def custom-signals '())
 
-
 (defn timer
   "Gives a timer, starting at 0. Count every second."
   []
@@ -30,32 +29,59 @@
 (defn search-signal
   "Search for the named signal into the existing signals. false if signal does not exist."
   [name]
-  (if (empty? custom-signals)
+  (If (empty? custom-signals)
     false
     (loop [[sig & signals] custom-signals]
       (let [sig-name (first sig)]
-        (if (not= name sig-name)
+        (if (not= (.toString name) sig-name)
           (if-not (empty? signals)
             (recur signals)
             false)
           sig)))))
 
-(defn create-signal
+(defmacro create-signal
   "Creates a proper signal for embla."
   [name]
   (let [custom (chan)]
-    (if (search-signal name)
-      (throw (Exception. "Trying to create an already existent signal.")))
-    (alter-var-root (var custom-signals) #(cons (list name custom (atom '())) %))))
+    `(if (search-signal ~(.toString name))
+       (throw (Exception. "Trying to create an already existent signal."))
+       (alter-var-root (var custom-signals) #(cons (list (.toString name) custom (atom '())) %)))))
 
 (defn signal-register
   "Register the channel fun-sig to the signal named name."
   [name fun-sig]
-  (let [signal (search-signal name)]
+  (let [signal (search-signal (.toString name))]
     (if-not signal
       (throw (Exception. "Trying to register to inexistent signal."))
       (let [fun-signals (second (rest signal))]
         (swap! fun-signals #(cons fun-sig %))))))
+
+(defmacro defsigf
+  "Define a function registered to the signal."
+  [name & code]
+  (let [channel (chan)]
+    (signal-register name channel)
+    `(let [~'msg 3]
+       ;;(go-loop []
+       ;;('p 'gom-sem)
+       ~@code
+       ;;('v 'gom-sem)
+       ;;('GOM/diff)
+       ;;)
+       )))
+
+(println custom-signals) 
+(macroexpand '(create-signal move))
+(search-signal "enemy")
+(macroexpand '(defsigf enemy
+                (if (msg < 3)
+                  (println "Gloups")
+                  (println "Pas Gloups"))))
+
+(defsigf enemy
+  (if (< msg 3)
+    (println "Gloups")
+    (println "Pas Gloups")))
 
 (defn defn-sig
   "Func have to take one channel in parameter."
