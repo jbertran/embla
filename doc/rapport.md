@@ -568,8 +568,6 @@ l'essentiel, nous avons choisi de ne pas garder en mémoire les noeuds de modèl
 détruits pour des raisons de performance si une scène devient suffisemment
 compliquée.
 
-## Brossage de crinière de poneys.
-
 \newpage
 
 # Bibliographie
