@@ -429,9 +429,31 @@ le noeud de modèle concerné.
 
 # Extensions
 
+A partir de l'itération actuelle d'Embla, aidés par l'architecture existante,
+nous pourrions imaginer certaines extensions que nous n'avons pas réalisé par
+soucis de temps et de complexité du programme. 
+
 ## Acyclisme du graphe de signaux
 
+Dans l'état actuel du projet, la charge de s'assurer que les signaux sont
+correctement formés revient à l'utilisateur. Une extension immédiate du moteur
+de rendu est de gérer, en plus de l'arbre de formes, un graphe représentant les
+signaux, de manière à vérifier pour l'utilisateur la validité de ses définitions
+de signaux vis-à-vis des signaux déjà existants.
+
 ## Hiérarchie des zones de dessin
+
+L'aspect structuré de notre représentation du modèle nous donne un outil
+puissant pour propager des modifications de manière générale. Par exemple,
+lorsqu'on réduit la taille d'un élément, on pourrait vouloir que le comportement
+par défaut des éléments fils de celui-ci subissent une réduction de taille
+proportionnelle au changement subi. Avec l'introduction de métadonnées
+supplémentaires dans les noeuds du modèle, on imagine facilement l'introduction
+de telles relations entre éléments.
+
+Quant au mode de définition de ces relations, on envisagerait plutôt une
+approche laissant l'utilisateur définir lui-même ce comportement, plutôt que
+de restreindre ceci à un comportement prédéfini.
 
 ## Brossage de crinière de poneys.
 
