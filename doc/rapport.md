@@ -38,6 +38,8 @@ des comportements
 * Slack
 * GitHub: <https://github.com/jbertran/embla>
 
+\pagebreak
+
 # Ambitions
 
 ## Functional Reactive Programming
@@ -66,7 +68,16 @@ Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signau
 
 ## Live Coding
 
+Dans un souci de simplicité, et de coller à l'esprit Clojure, l'un des buts de ce projet était également de fournir une interface interactive, type REPL (Read-Eval-Print-Loop), afin de pouvoir développer dynamiquement. 
+Dans un paradigme de développement classique, l'utilisateur écrit son programme à l'aide d'un éditeur de texte ou d'un autre outil, puis le compile et l'exécute (ou l'interprète immédiatement). La compilation peut alors relever des bogues, ainsi que l'exécution. Le développeur retourne alors à son éditeur de texte pour déboguer son programme.
+Dans un paradigme de live coding, l'utilisateur est amené à écrire son programme dans un éditeur de texte, puis l'exécuter immédiatement. Le code écrit va ainsi être exécuté à la volée, et les conséquences sont immédiatement visibles. Il n'y a plus de séparation entre la phase d'écriture et la phase d'exécution : les deux sont intimement liées. La mise en place d'un REPL permet d'abonder en ce sens : une fois le programme lancé, une boucle d'interaction s'affiche, permettant de rentrer des commandes et de continuer à développer le programme, même si celui-ci est encore en train de fonctionner. Ce concept ressemble fortement au débogueur inclus par défaut dans la majorité des distributions de Common Lisp, capable d'interrompre le programme au premier bogue pour réécrire le code dynamiquement.
+
 ## Abstraction graphique
+
+## Modifications graphiques minimales
+
+Dans un souci de performances, il se révèle plus intéressant de placer les données graphiques dans la mémoire du GPU au démarrage du programme (ou d'un niveau par exemple, dans le cas d'un jeu), puis de ne plus avoir à y toucher : on minimise l'utilisation du bus mémoire pour faire transiter des données pouvant rapidement atteindre plusieurs centaines de Mio dans le cas de jeux haute définition ; et on réutilise un maximum les données en place dans la mémoire. De plus, les jeux réutilisent souvent les mêmes textures et les mêmes objets (un ennemi peut apparaître plusieurs fois, idem pour les arbres et autres éléments du décor). 
+Pour faciliter cela, on souhaite donc charger et modifier des éléments le moins souvent possible au niveau de la carte graphique. Or, les différents modèles immutables contiennent tous l'information complète de la scène de jeu. Pour s'en abstraire, il a été envisagé d'effectuer un diff, à l'instar de React. Entre deux modèles, il est possible de comparer les différences entre eux, et en retenir uniquement l'information utile : ce qui a changé. Ce qui n'a pas changé n'a nul besoin d'être modifié, et ce qui a été changé va être modifié sur la carte graphique. L'état des objets qui ont été modifié est donc la seule information réellement utile.
 
 # Problèmes rencontrés <A RENOMMER>
 
@@ -76,7 +87,7 @@ Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signau
 
 # Embla
 
-<Blabla EMbla :)>
+Contrairement à d'autres langages comme Java, Clojure est très peu verbeux. De plus, les noms des projets ont rarement un rapport avec ce qu'il représente, mais se doivent d'être reconnaissables et faciles à retenir, comme Leiningen, Herbert, Alia, ou Catacumba. Pour le projet, Embla a été le nom retenu. Embla et Ask ("aulne" et "frêne") sont la première femme et le premier homme créés par Odin et ses frères Vili et Vé dans la mythologie nordique. Embla représente donc la naissance des êtres humains, tout comme elle représente la source de tout jeu OpenGL dans notre projet.
 
 ## Vue d'ensemble
 
@@ -84,11 +95,10 @@ Dans un jeu vidéo, le modèle représente le monde en lui-même ; et les signau
 
 Notre application se divise en trois parties distinctes.
 
-* Du côté Clojure, la définition des macros offrant à l'utilisateur d'interagir
-avec le modèle
-* Du côté Java:
-  * La définition du modèle structuré, qui est pour nous un arbre de formes
-  (rectangles, triangles, sprites...)
+* Du côté Clojure, la définition des macros permettant à l'utilisateur de construire le modèle et d'interagir avec celui-ci.
+* Du côté Java :
+  * La définition du modèle structuré, prenant la forme d'un arbre de formes
+  (les primitives de dessin en deux dimensions : rectangles, triangles, sprites...).
   * Le pendant OpenGL du modèle, sous la forme d'un dictionnaire identifiant
   Embla / instance de classe forme OpenGL, qui ne sert qu'à retenir les
   identifiants nécessaires pour redessiner les formes géométriques à partir des
@@ -103,7 +113,7 @@ avec le modèle
 
 ### Exécution
 
-![Schéma d'exécution](execution_flowchart.svg "Schéma d'exécution")
+![Schéma d'exécution](execution_flowchart.png "Schéma d'exécution")
 
 
 ### OpenGL - fonctionnement
@@ -210,6 +220,8 @@ entre la vue et le modèle jusqu'à la propagation réussie des modifications po
 le noeud de modèle concerné.
 
 # Extensions
+
+\newpage
 
 # Bibliographie
 
