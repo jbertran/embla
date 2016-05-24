@@ -74,6 +74,8 @@ Dans un paradigme de live coding, l'utilisateur est amené à écrire son progra
 
 ## Abstraction graphique
 
+<Je te le laisse. :D>
+
 ## Modifications graphiques minimales
 
 Dans un souci de performances, il se révèle plus intéressant de placer les données graphiques dans la mémoire du GPU au démarrage du programme (ou d'un niveau par exemple, dans le cas d'un jeu), puis de ne plus avoir à y toucher : on minimise l'utilisation du bus mémoire pour faire transiter des données pouvant rapidement atteindre plusieurs centaines de Mio dans le cas de jeux haute définition ; et on réutilise un maximum les données en place dans la mémoire. De plus, les jeux réutilisent souvent les mêmes textures et les mêmes objets (un ennemi peut apparaître plusieurs fois, idem pour les arbres et autres éléments du décor). 
@@ -126,6 +128,8 @@ En plus d'annihiler la possibilité de concurrence — puisqu'une fois l'informa
 
 ## Gestion du modèle
 
+Un problème majeur s'est posé lors de la gestion du modèle : puisque chaque fonction, une fois son signal reçu crée un nouveau modèle qui remplace l'ancien, comment s'assurer que les fonctions ne travaillent pas sur le même modèle, mais produisent bien différent modèles dans le temps. La décision de mettre un sémaphore sur le modèle a été prise. Ainsi, chaque fonction doit essayer de prendre le "contrôle" du modèle avant de pouvoir en créer un nouveau qui viendra le remplacer. Si cette fonction est en train de calculer le nouveau modèle, aucune fonction ne peut lire le modèle actuel. Elles devront attendre que la fonction de calcul ait fini de son travail et ait remplacé le modèle pour pouvoir agir. Ainsi, on peut s'assurer que le modèle est bien modifié à chaque fois, et qu'aucune modification ne se perds dans le temps.
+
 # Embla
 
 Contrairement à d'autres langages comme Java, Clojure est très peu verbeux. De plus, les noms des projets ont rarement un rapport avec ce qu'il représente, mais se doivent d'être reconnaissables et faciles à retenir, comme Leiningen, Herbert, Alia, ou Catacumba. Pour le projet, Embla a été le nom retenu. Embla et Ask ("aulne" et "frêne") sont la première femme et le premier homme créés par Odin et ses frères Vili et Vé dans la mythologie nordique. Embla représente donc la naissance des êtres humains, tout comme elle représente la source de tout jeu OpenGL dans notre projet.
@@ -141,12 +145,31 @@ Notre application se divise en trois parties distinctes.
     * La définition du modèle structuré, prenant la forme d'un arbre de formes (les primitives de dessin en deux dimensions : rectangles, triangles, sprites...).
     * Le pendant OpenGL du modèle, sous la forme d'un dictionnaire identifiant Embla / instance de classe forme OpenGL, qui ne sert qu'à retenir les identifiants nécessaires pour redessiner les formes géométriques à partir des données déjà présentes sur la carte graphique.
 
+#### Modèle
+
+Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose ensuite de n fils, puisque le monde peut être composé d'autant de personnages ou d'éléments que l'on souhaite sur une même surface. En effet, chaque élément du jeu est représenté par un noeud de l'arbre. Un personnage, un élément du jeu, ou un élément de décor sera représenté par un noeud. 
+
+Dans un jeu à défilement horizontal, on peut imaginer que le noeud de l'arbre aura deux fils : le ciel et le sol. Le sol aura tous les objets reposant sur le sol comme fils, alors que le ciel aura comme fils toutes les objets reposant dans le ciel. Cela permet également de monter au niveau de détail désiré : un personnage peut avoir divers objets, chacun représenté par un fils. Et chaque objet peut lui-même avoir différentes caractéristiques.
+
+Enfin, les possibilités de modularité sont nombreuses : les noeuds de bases permettent de créer n'importe quel élément. En héritant de ces noeuds, on peut créer de nouveaux éléments, et lui attribuer n'importe quel caractéristique. On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut représenter n'importe quel élément.
+
+<Tu me fais un schéma de l'arbre ? Un truc bâteau. :D>
+
 #### Signaux
 
-#### Modèle
+Les signaux se décomposent en trois parties : les signaux de bases, les signaux composés, et les fonctions abonnés aux signaux.
+
+Les signaux de bases — ou primitives — sont les briques de base du jeu. Le temps ou les entrées utilisateurs, notamment sont des primitives du jeu. L'utilisateur peut en créer, mais ne peut pas les détruire, et elles seront tout le temps disponibles. Des signaux comme la vie de son personnage ou les collisions peuvent être implémentés. Cela permet par la suite de bâtir de nouveaux signaux plus complexes. 
+
+Les signaux composés sont des signaux prenant en entrée deux signaux, et les combinant pour n'en former plus qu'un. Pour combiner ces deux signaux, une fonction se charge de réceptionner les informations des signaux en entrée, de calculer ce qui est nécessaire, puis d'émettre ce résultat sur le canal de sortie. Cela permet de bâtir le monde selon ses besoins, et de composer différents éléments pour en former un nouveau. Ainsi, deux signaux de collisions en entrée peuvent calculer si une collision à lieu par exemple, et émettre le signal correspondant.
+
+Enfin, les fonctions abonnés aux signaux correspondent à la fin de la chaîne : une fois les signaux bâtis et fonctionnels, l'utilisateur peut y greffer des fonctions. Ces dernières vont lire le contenu de ces signaux, et agir en conséquence, pour créer un nouveau modèle. Elles sont donc le coeur du moteur, puisque ce sont elles qui modifient l'état du jeu. Ces fonctions peuvent faire ce qu'elles souhaitent, mais elles ne doivent pas créer de nouveaux signaux, ou réémettre sur les signaux de bases. Si elles émettent sur les signaux de base, le graphe de signaux devient cyclique, et le moteur peut tourner en boucle.
+
+<Schéma si tu es motivé. :D>
 
 #### Vue
 
+<Je te le laisse. :D>
 
 ### Exécution
 
@@ -256,6 +279,10 @@ entre la vue et le modèle jusqu'à la propagation réussie des modifications po
 le noeud de modèle concerné.
 
 # Extensions
+
+Vérifier l'acyclisme du graphe de signaux.
+
+Brosser la crinière des poneys.
 
 \newpage
 
