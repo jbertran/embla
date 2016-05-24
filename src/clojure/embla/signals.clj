@@ -66,9 +66,10 @@
          (.acquire gom)
          ~@code
          (.release gom)
-         (.diff gom)))))
+         (.diff gom))
+       (recur))))
 
-(println custom-signals)
+(Println custom-signals)
 (macroexpand '(create-signal move))
 (search-signal "enemy")
 (macroexpand '(defsigf enemy
@@ -88,7 +89,8 @@
       (go-loop []
         (let [msg1 (<! sig1)
               msg2 (<! sig2)]
-          (>! chan (func msg1 msg2))))
+          (>! chan (func msg1 msg2)))
+        (recur))
       (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) custom (atom '())) %)))))
 
 (defsigf enemy
@@ -104,6 +106,7 @@
           output (second (rest sig))]
       (go-loop []
         (let [msg (<! input)]
-          (map #(go (>! % msg)) output)))
+          (map #(go (>! % msg)) output))
+        (recur))
       (if-not (empty? signals)
         (recur signals)))))

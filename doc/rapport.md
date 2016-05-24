@@ -83,6 +83,47 @@ Pour faciliter cela, on souhaite donc charger et modifier des éléments le moin
 
 ## Signaux & Callback Hell
 
+La création d'un monde de signaux de premier ordre amène divers problèmes inhérents à la plateforme utilisée. Dans un programme Clojure, les signaux sont représentés sous formes de `channel`. Un canal supporte un nombre indéfinis d'écrivains et de lecteurs, mais également de lectures ou d'écritures. Ils fonctionnent comme une file d'attente : lorsqu'un écrivain écrit une valeur à l'intérieur de celui-ci, la valeur se place en attente. Dès qu'une valeur est en attente, si un lecteur peut la lire, il va alors la consumer, et la faire disparaître. Dans un monde de signaux, il serait souhaitable que lorsqu'un signal important, comme le mouvement par exemple, émette une information, toutes les fonctions de notre choix puisse intercepter cette information pour l'utiliser. Toutefois, au vu du modèle, la première fonction lisant la valeur privera les autres fonctions de celle-ci. Il faut donc une couche relai pour faire le lien entre la valeur du signal émis, et la réception de celle-ci par toutes les fonctions.
+
+Pour arriver à ce résultat, il faut donc associer, à chaque signal, une liste de signaux récepteurs. A chaque émission d'une information sur le signal, cette même information est dupliquée dans les signaux récepteurs :
+```clojure
+(defn broadcast-all
+  "Transfer the value from the channel to all functions which need it."
+  []
+  (loop [[sig & signals] custom-signals]
+    (let [input  (second sig)
+          output (second (rest sig))]
+      (go-loop []
+        (let [msg (<! input)]
+          (map #(go (>! % msg)) output))
+        (recur))
+      (if-not (empty? signals)
+        (recur signals)))))
+```
+Toutefois, pour qu'une fonction puisse s'abonner au signal qui l'intéresse, il a fallu également écrire une macro permettant d'effectuer ce processus sans que l'utilisateur ait à s'en soucier :
+```clojure
+(defmacro defsigf
+  "Define a function registered to the signal."
+  [name & code]
+  (let [channel (chan)]
+    (signal-register name channel)
+    `(go-loop []
+       (let [~'msg (<! channel)]
+         ~@code
+       (recur))))
+```
+Cela permet à l'utilisateur, à l'intérieur de sa fonction abonné au signal qui l'intéresse, d'utiliser la variable `msg`, qui contient le message qui l'intéresse. Ainsi, chaque fonction définie par l'utilisateur peut s'abonner à un signal sans que cela ne consume les informations de ce signal au profit d'une autre fonction.
+
+Une telle décision permet également de ne pas tomber dans le piège d'un callback hell. Une première solution envisagée était de pouvoir abonner différentes fonctions anonymes de callback à un signal, et lorsque celui-ci obtenait une information, il exécutait séquentiellement les fonctions une par une avec l'information en question. 
+```clojure
+(go-loop []
+  (let [msg (<! signal)]
+    (doseq [fun functions] (func msg))))
+```
+*Dans cet exemple, lorsque signal reçoit une information, les fonctions de la liste functions sont exécutés séquentiellement.*
+
+En plus d'annihiler la possibilité de concurrence — puisqu'une fois l'information envoyée aux signaux abonnés, le scheduler se charge de répartir les calculs sur les différentes fonctions — cela peut rapidement aboutir à du "code spaghetti" avec des callback très nombreux. Par exemple, les codes Javascript de callback hell sont nombreux. La décision d'éviter de tomber dans cet écueil avec plusieurs signaux à donc été prise.
+
 ## Gestion du modèle
 
 # Embla
@@ -97,12 +138,8 @@ Notre application se divise en trois parties distinctes.
 
 * Du côté Clojure, la définition des macros permettant à l'utilisateur de construire le modèle et d'interagir avec celui-ci.
 * Du côté Java :
-  * La définition du modèle structuré, prenant la forme d'un arbre de formes
-  (les primitives de dessin en deux dimensions : rectangles, triangles, sprites...).
-  * Le pendant OpenGL du modèle, sous la forme d'un dictionnaire identifiant
-  Embla / instance de classe forme OpenGL, qui ne sert qu'à retenir les
-  identifiants nécessaires pour redessiner les formes géométriques à partir des
-  données déjà présentes sur la carte graphique.
+    * La définition du modèle structuré, prenant la forme d'un arbre de formes (les primitives de dessin en deux dimensions : rectangles, triangles, sprites...).
+    * Le pendant OpenGL du modèle, sous la forme d'un dictionnaire identifiant Embla / instance de classe forme OpenGL, qui ne sert qu'à retenir les identifiants nécessaires pour redessiner les formes géométriques à partir des données déjà présentes sur la carte graphique.
 
 #### Signaux
 
@@ -114,7 +151,6 @@ Notre application se divise en trois parties distinctes.
 ### Exécution
 
 ![Schéma d'exécution](execution_flowchart.png "Schéma d'exécution")
-
 
 ### OpenGL - fonctionnement
 
