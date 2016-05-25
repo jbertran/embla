@@ -1,4 +1,4 @@
-package embla.model;
+package jv.embla.model;
 
 import java.awt.Color;
 

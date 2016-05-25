@@ -1,5 +1,6 @@
-package embla.view.glShapes;
+package jv.embla.view.glShapes;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
@@ -16,9 +17,9 @@ public class GLTexture {
 
 	int texID;
 	public int width, height;
-	FloatBuffer texData;
+	ByteBuffer texData;
 
-	public GLTexture(int width, int height, String path, FloatBuffer texData) {
+	public GLTexture(int width, int height, String path, ByteBuffer texData) {
 		this.texID = GL11.glGenTextures();
 		this.texData = texData;
 		this.width = width;

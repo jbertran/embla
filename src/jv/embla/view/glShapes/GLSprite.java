@@ -1,4 +1,4 @@
-package embla.view.glShapes;
+package jv.embla.view.glShapes;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;
@@ -10,10 +10,10 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import embla.model.Model;
-import embla.model.Sprite;
-import embla.view.glUtils.GameEngine;
-import embla.view.glUtils.TextureLoader;
+import jv.embla.model.Model;
+import jv.embla.model.Sprite;
+import jv.embla.view.glUtils.GameEngine;
+import jv.embla.view.glUtils.TextureLoader;
 
 public class GLSprite extends GLShape implements IGLShape {
 
@@ -54,7 +54,7 @@ public class GLSprite extends GLShape implements IGLShape {
 		// Texture -- data already bound. No touching!
 		GL20.glEnableVertexAttribArray(2);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_texcoords);
-		GL11.glTexCoordPointer(texture.size, GL11.GL_FLOAT, 0, 0);
+		// GL11.glTexCoordPointer(texture.size, GL11.GL_FLOAT, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL20.glDisableVertexAttribArray(2);
 		// End

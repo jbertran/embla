@@ -1,5 +1,5 @@
 (ns embla.gom
-  (:import [embla.model Circle Model Rectangle Shape]))
+  (:import [jv.embla.model Circle Model Rectangle Shape]))
 
 (defmacro add-children
   "Allow to dynamically add children. Use it to add children to an existent node."

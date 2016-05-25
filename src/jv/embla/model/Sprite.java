@@ -1,4 +1,4 @@
-package embla.model;
+package jv.embla.model;
 
 public class Sprite extends Model {
   public String path;

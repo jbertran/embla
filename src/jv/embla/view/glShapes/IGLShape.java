@@ -1,8 +1,8 @@
-package embla.view.glShapes;
+package jv.embla.view.glShapes;
 
 import java.awt.Color;
 
-import embla.model.Model;
+import jv.embla.model.Model;
 
 public interface IGLShape {
 

@@ -1,9 +1,9 @@
-package embla.view.glShapes;
+package jv.embla.view.glShapes;
 
 import java.awt.Color;
 
-import embla.model.Model;
-import embla.view.glUtils.GameEngine;
+import jv.embla.model.Model;
+import jv.embla.view.glUtils.GameEngine;
 
 public class GLConvexPolygon extends GLShape implements IGLShape{
 

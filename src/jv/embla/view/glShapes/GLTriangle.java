@@ -1,4 +1,4 @@
-package embla.view.glShapes;
+package jv.embla.view.glShapes;
 
 import java.awt.Color;
 
@@ -7,9 +7,9 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import embla.model.Model;
-import embla.model.Triangle;
-import embla.view.glUtils.GameEngine;
+import jv.embla.model.Model;
+import jv.embla.model.Triangle;
+import jv.embla.view.glUtils.GameEngine;
 
 public class GLTriangle extends GLShape implements IGLShape {
 	float[] a;

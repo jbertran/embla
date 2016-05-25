@@ -1,4 +1,4 @@
-package embla.view.glUtils;
+package jv.embla.view.glUtils;
 
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
@@ -41,18 +41,18 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import embla.model.Circle;
-import embla.model.Model;
-import embla.model.Rectangle;
-import embla.model.Sprite;
-import embla.model.Triangle;
-import embla.view.glShapes.GLCircle;
-import embla.view.glShapes.GLRectangle;
-import embla.view.glShapes.GLShape;
-import embla.view.glShapes.GLSprite;
-import embla.view.glShapes.GLTriangle;
+import jv.embla.model.Circle;
+import jv.embla.model.Model;
+import jv.embla.model.Rectangle;
+import jv.embla.model.Sprite;
+import jv.embla.model.Triangle;
+import jv.embla.view.glShapes.GLCircle;
+import jv.embla.view.glShapes.GLRectangle;
+import jv.embla.view.glShapes.GLShape;
+import jv.embla.view.glShapes.GLSprite;
+import jv.embla.view.glShapes.GLTriangle;
 
-public class GameEngine {
+public class GameEngine extends Thread {
 	// The window handle
 	private long window;
 	private GLFWKeyCallback   keyCallback;
@@ -68,6 +68,7 @@ public class GameEngine {
 	public int width, height;
 
 	public GameEngine(int width, int height) {
+		super();
 		this.width = width;
 		this.height = height;
 		this.glShapes = new HashMap<>();
@@ -77,7 +78,6 @@ public class GameEngine {
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
-
 		try {
 			init();
 			glLoop();
@@ -199,30 +199,33 @@ public class GameEngine {
 
 	public void redraw() {
 		// Propagate model changes to GL buffers
-		if (changes.isPresent()) {
-			for (Model modelch : changes.get()) {
+		try {
+			HashMap<String, Model> modelchanges = changes.get();
+			for (Model modelch : modelchanges.values()) {
 				GLShape s = glShapes.get(modelch.ID);
 				if (s != null)
-				s.propagate(modelch);
+					s.propagate(modelch);
 				else
-				throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
+					throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
 			}
+		} finally {
+			// Changes are propagated, now draw the world
+			changes = Optional.empty();
+			draw_model_item(world);
 		}
-		// Redraw the scene
-		draw_model_item(world);
 	}
 
 	public void draw_model_item(Model mod) {
 		// Draw the item
 		GLShape s = glShapes.get(mod.ID);
 		if (mod.ID.equals("root"))
-		draw_children(mod);
+			draw_children(mod);
 		else if (s != null) {
 			s.render();
 			draw_children(mod);
 		}
 		else
-		throw new RuntimeException("Attempted to render GLShape not known to the engine");
+			throw new RuntimeException("Attempted to render GLShape not known to the engine");
 	}
 
 	private void draw_children(Model mod) {

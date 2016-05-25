@@ -1,4 +1,4 @@
-package embla.view.glUtils;
+package jv.embla.view.glUtils;
 
 public class Launcher {
 	public static void main(String [] args) {

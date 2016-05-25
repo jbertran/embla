@@ -1,4 +1,4 @@
-package embla.view.glShapes;
+package jv.embla.view.glShapes;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;
@@ -9,8 +9,8 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import embla.view.glUtils.GameEngine;
-import embla.view.glUtils.Utils;
+import jv.embla.view.glUtils.GameEngine;
+import jv.embla.view.glUtils.Utils;
 
 public abstract class GLShape implements IGLShape {
 

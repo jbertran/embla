@@ -1,4 +1,4 @@
-package embla.model;
+package jv.embla.model;
 
 public class Shape extends Model {
   private int[][] points;

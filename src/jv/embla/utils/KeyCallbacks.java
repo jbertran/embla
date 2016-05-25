@@ -1,12 +1,11 @@
-package embla.utils;
+package jv.embla.utils;
 
-import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWKeyCallback;
 
+import clojure.java.api.Clojure;
 import clojure.lang.IFn;
 import clojure.lang.Keyword;
-import embla.model.*;
-import clojure.java.api.Clojure;
 
 // Class used to handle key callbacks from GLFW.
 public class KeyCallbacks extends GLFWKeyCallback {

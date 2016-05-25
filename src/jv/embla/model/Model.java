@@ -1,4 +1,4 @@
-package embla.model;
+package jv.embla.model;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -101,7 +101,12 @@ public class Model {
 
     // Acquire the mutex.
   public void acquire() {
-    mutex.acquire();
+	  try {
+		  mutex.acquire();
+	  }
+	  catch(InterruptedException e) {
+		  e.printStackTrace();
+	  }
   }
 
   // Release the mutex.
