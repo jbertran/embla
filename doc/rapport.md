@@ -434,6 +434,9 @@ GL30.glBindVertexArray(0);
 GL20.glUseProgram(0);
 ```
 
+Cette logique que l'on désire cacher à l'utilisateur se trouve dans la
+fonction de rendu propre à chaque sous-classe de `GLShape`
+
 ##### Gestion des formes
 
 Nos formes OpenGL servent uniquement à identifier les buffers présents sur la
@@ -489,19 +492,21 @@ causés par une éventuelle modification directe du modèle par l'utilisateur, e
 dehors du cadre du DSL qui lui est fourni.
 
 ```java
-// Propagate model changes to GL buffers
-if (changes.isPresent()) {
-	for (Model modelch : changes.get()) {
-		GLShape s = glShapes.get(modelch.ID);
-		if (s != null)
-			s.propagate(modelch);
- 		else
-			throw new RuntimeException(
-				"Attempted to propagate changes to GLShape unknown to the engine");
+try {
+			HashMap<String, Model> modelchanges = changes.get();
+			for (Model modelch : modelchanges.values()) {
+				GLShape s = glShapes.get(modelch.ID);
+				if (s != null)
+					s.propagate(modelch);
+				else
+					throw new RuntimeException("Attempted to propagate changes to GLShape
+                                          unknown to the engine");
+			}
+		} finally {
+			// Changes are propagated, now draw the world
+			changes = Optional.empty();
+			draw_model_item(world);
 		}
-}
-// Redraw the scene
-draw_model_item(world);
 ```
 
 La variable globale qui contient les changements de l'ancien modèle au nouveau
