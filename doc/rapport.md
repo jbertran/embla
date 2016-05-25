@@ -339,14 +339,6 @@ On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux
 décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut
 représenter n'importe quel élément.
 
-Afin de pouvoir représenter et manipuler les données comme un arbre, un jeu de macros a été configuré. Ces dernières permettent d'effectuer la majeure partie du travail de l'utilisateur en dissimulant les appels aux classes et fonctions correspondantes. Il est ainsi possible de définir un arbre simple :
-
-```clojure
-(defgom "World"
-  (defrect {:x 0 :y 0 :length 400 :width 200 :id "sky"})
-  (defrect {:x 0 :y 200 :length 400 :width 100 :id "earth"}))
-```
-
 ![Exemple d'affichage à partir du modèle](resources/model_to_view.png
 "Exemple d'affichage à partir du modèle")
 
@@ -442,9 +434,6 @@ GL30.glBindVertexArray(0);
 GL20.glUseProgram(0);
 ```
 
-Cette logique que l'on désire cacher à l'utilisateur se trouve dans la
-fonction de rendu propre à chaque sous-classe de `GLShape`
-
 ##### Gestion des formes
 
 Nos formes OpenGL servent uniquement à identifier les buffers présents sur la
@@ -500,21 +489,19 @@ causés par une éventuelle modification directe du modèle par l'utilisateur, e
 dehors du cadre du DSL qui lui est fourni.
 
 ```java
-try {
-			HashMap<String, Model> modelchanges = changes.get();
-			for (Model modelch : modelchanges.values()) {
-				GLShape s = glShapes.get(modelch.ID);
-				if (s != null)
-					s.propagate(modelch);
-				else
-					throw new RuntimeException("Attempted to propagate changes to GLShape
-                                          unknown to the engine");
-			}
-		} finally {
-			// Changes are propagated, now draw the world
-			changes = Optional.empty();
-			draw_model_item(world);
+// Propagate model changes to GL buffers
+if (changes.isPresent()) {
+	for (Model modelch : changes.get()) {
+		GLShape s = glShapes.get(modelch.ID);
+		if (s != null)
+			s.propagate(modelch);
+ 		else
+			throw new RuntimeException(
+				"Attempted to propagate changes to GLShape unknown to the engine");
 		}
+}
+// Redraw the scene
+draw_model_item(world);
 ```
 
 La variable globale qui contient les changements de l'ancien modèle au nouveau
