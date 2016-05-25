@@ -339,6 +339,14 @@ On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux
 décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut
 représenter n'importe quel élément.
 
+Afin de pouvoir représenter et manipuler les données comme un arbre, un jeu de macros a été configuré. Ces dernières permettent d'effectuer la majeure partie du travail de l'utilisateur en dissimulant les appels aux classes et fonctions correspondantes. Il est ainsi possible de définir un arbre simple :
+
+```clojure
+(defgom "World"
+  (defrect {:x 0 :y 0 :length 400 :width 200 :id "sky"})
+  (defrect {:x 0 :y 200 :length 400 :width 100 :id "earth"}))
+```
+
 ![Exemple d'affichage à partir du modèle](resources/model_to_view.png
 "Exemple d'affichage à partir du modèle")
 
