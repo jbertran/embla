@@ -7,13 +7,13 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import jv.embla.engine.RenderEngine;
 import jv.embla.model.Model;
 import jv.embla.model.Rectangle;
-import jv.embla.view.glUtils.GameEngine;
 
 public class GLRectangle extends GLShape implements IGLShape {
 
-  public GLRectangle(String e_ID, GameEngine engine, int x, int y, int width, int height, Color c) {
+  public GLRectangle(String e_ID, RenderEngine engine, int x, int y, int width, int height, Color c) {
     super(e_ID, engine);
 
     // Bookkeeping general info

@@ -7,16 +7,16 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import jv.embla.engine.RenderEngine;
 import jv.embla.model.Circle;
 import jv.embla.model.Model;
-import jv.embla.view.glUtils.GameEngine;
 
 public class GLCircle extends GLShape implements IGLShape {
   static final int slices = 50;
   float radius;
   float[] center;
 
-  public GLCircle(String e_ID, GameEngine engine, int x, int y, int radius, Color c) {
+  public GLCircle(String e_ID, RenderEngine engine, int x, int y, int radius, Color c) {
     super(e_ID, engine);
     // Bookkeeping general info
     summit_count = 1 + (2*slices);

@@ -25,4 +25,6 @@
   "Start an Embla render engine instance"
   []
   (use 'clj.embla.core)
+  (use 'clj.embla.gom)
+  (use 'clj.embla.signals)
   (eval '(clj.embla.core/embla-run)))

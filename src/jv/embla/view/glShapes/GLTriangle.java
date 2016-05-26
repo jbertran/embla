@@ -7,16 +7,16 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import jv.embla.engine.RenderEngine;
 import jv.embla.model.Model;
 import jv.embla.model.Triangle;
-import jv.embla.view.glUtils.GameEngine;
 
 public class GLTriangle extends GLShape implements IGLShape {
 	float[] a;
 	float[] b;
 	float[] c;
 
-	public GLTriangle(String e_ID, GameEngine engine, int[] a, int[] b, int[] c, Color col) {
+	public GLTriangle(String e_ID, RenderEngine engine, int[] a, int[] b, int[] c, Color col) {
 		super(e_ID, engine);
 
 		// Bookkeeping general info

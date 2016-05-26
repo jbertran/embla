@@ -40,6 +40,9 @@ Obtained by boot.clj:
 We provide macros that allow you to interact with Embla. These can be nested as
 much as desired, to build complex models in a single REPL submission.
 
+You may also create a file regrouping macro calls and call (load-file
+  <your_file>) within the REPL to achieve the same effect.
+
 ##### defgom
 
 `(defgom name)` creates a GOM with root node ID `name`. Error if `name`

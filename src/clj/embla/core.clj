@@ -1,10 +1,10 @@
 (ns clj.embla.core
-  (:import jv.embla.view.glUtils.GameEngine)
+  (:import jv.embla.engine.RenderEngine)
   (:gen-class))
 
 (defn embla-run
   "Launch Embla. REPL live coding optional"
   [& args]
-  (let [ge (GameEngine. 400 400)]
-    (let [thread (Thread. ge)]
+  (let [re (RenderEngine. 400 400 "Embla")]
+    (let [thread (Thread. re)]
       (.start thread))))

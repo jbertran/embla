@@ -16,7 +16,7 @@ public class GLTexture {
 	private String path;
 
 	int texID;
-	public int width, height;
+	public int width, height, size;
 	ByteBuffer texData;
 
 	public GLTexture(int width, int height, String path, ByteBuffer texData) {
@@ -24,6 +24,7 @@ public class GLTexture {
 		this.texData = texData;
 		this.width = width;
 		this.height = height;
+		this.size = width*height;
 		this.path = path;
 	}
 
@@ -38,18 +39,21 @@ public class GLTexture {
 	public String path() {
 		return path;
 	}
+	
+	public int size() {
+		return this.size;
+	}
 
 	public void bindToGL() {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(TARGET, texID);
+		bind();
 		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, texID);
 		GL11.glTexParameteri(TARGET, GL11.GL_TEXTURE_MIN_FILTER, FILTER);
 		GL11.glTexParameteri(TARGET, GL11.GL_TEXTURE_MAG_FILTER, FILTER);
 		GL11.glTexParameteri(TARGET, GL11.GL_TEXTURE_WRAP_S, WRAP);
 		GL11.glTexParameteri(TARGET, GL11.GL_TEXTURE_WRAP_T, WRAP);
-		// TODO: account for alpha or not
 		GL11.glTexImage2D(TARGET, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, texData);
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(TARGET, 0);
+		// GL11.glBindTexture(TARGET, 0);
 	}
 }

@@ -10,19 +10,19 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import jv.embla.engine.RenderEngine;
 import jv.embla.model.Model;
 import jv.embla.model.Sprite;
-import jv.embla.view.glUtils.GameEngine;
 import jv.embla.view.glUtils.TextureLoader;
 
 public class GLSprite extends GLShape implements IGLShape {
 
-	private static final Color CLEAR_COLOR = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+	private static final Color TRANSP_COLOR = new Color(0.0f, 0.0f, 0.0f, 1.0f);
 	private TextureLoader loader;
 	private GLTexture texture = null;
 	private int vbo_texcoords;
 
-	public GLSprite(String e_ID, GameEngine engine, TextureLoader loader, String path,
+	public GLSprite(String e_ID, RenderEngine engine, TextureLoader loader, String path,
 	int x, int y, int width, int height) {
 		super(e_ID, engine, "shaders/texture_vertex.glsl", "shaders/texture_fragment.glsl");
 		// Bookkeeping general info
@@ -31,8 +31,9 @@ public class GLSprite extends GLShape implements IGLShape {
 
 		// Manage buffer contents
 		toProjection(x, y, width, height, path);
-		colorToVBO(CLEAR_COLOR);
+		colorToVBO(TRANSP_COLOR);
 		setupTexCoords();
+		setupTexData(path);
 
 		/** Bind extra attribute for the shader program's texture input **/
 		GL20.glBindAttribLocation(shader_progid, 2, "in_TextureCoord");
@@ -48,14 +49,17 @@ public class GLSprite extends GLShape implements IGLShape {
 		// Color -- data already bound. No touching!
 		GL20.glEnableVertexAttribArray(1);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_colorid);
-		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, 0, 0);
+		GL20.glVertexAttribPointer(1, summit_count, GL11.GL_FLOAT, false, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL20.glDisableVertexAttribArray(1);
 		// Texture -- data already bound. No touching!
 		GL20.glEnableVertexAttribArray(2);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_texcoords);
-		// GL11.glTexCoordPointer(texture.size, GL11.GL_FLOAT, 0, 0);
+		GL20.glVertexAttribPointer(2, summit_count, GL11.GL_FLOAT, false, 0, 0);
+		// GL11.glTexCoordPointer(texture.size(), GL11.GL_FLOAT, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL20.glDisableVertexAttribArray(2);
 		// End
 		GL30.glBindVertexArray(0);
@@ -79,19 +83,23 @@ public class GLSprite extends GLShape implements IGLShape {
 		// Update position
 		positionToVBO(glpos);
 		// Update texture if necessary
+		setupTexData(path);
+	}
+
+	private void setupTexData(String path) {
 		if (this.texture == null || !(this.texture.path().equals(path))) {
 			this.texture = loader.loadTexture(path);
 			this.texture.bindToGL();
 		}
 	}
-
+	
 	private void setupTexCoords() {
 		vbo_texcoords = GL15.glGenBuffers();
 		float [] coords = new float [] { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(summit_count * 2);
 		buffer.put(coords);
 		buffer.flip();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_colorid);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_texcoords);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}

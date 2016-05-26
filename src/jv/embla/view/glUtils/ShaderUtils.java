@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 
-public class Utils {
+public class ShaderUtils {
 
 	// TODO: shader cleanup
 	private static ArrayList<ArrayList<Integer>> shader_programs;

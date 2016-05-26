@@ -4,7 +4,6 @@ import java.awt.color.ColorSpace;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -32,13 +31,17 @@ public class TextureLoader {
 	public GLTexture loadTexture(String path) {
 		InputStream in;
 		PNGDecoder decoder;
+		if (textures.get(path) != null)
+			return textures.get(path);
 		try {
 			in = new FileInputStream(path);
 			decoder = new PNGDecoder(in);
 			ByteBuffer buf = ByteBuffer.allocateDirect(4*decoder.getWidth()*decoder.getHeight());
 			decoder.decode(buf, decoder.getWidth()*4, Format.RGBA);
 			buf.flip();
-			return new GLTexture(decoder.getWidth(), decoder.getHeight(), path, buf);
+			GLTexture t = new GLTexture(decoder.getWidth(), decoder.getHeight(), path, buf);
+			textures.put(path, t);
+			return t;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Failed to load PNG");

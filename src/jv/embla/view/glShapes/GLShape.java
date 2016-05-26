@@ -9,13 +9,13 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import jv.embla.view.glUtils.GameEngine;
-import jv.embla.view.glUtils.Utils;
+import jv.embla.engine.RenderEngine;
+import jv.embla.view.glUtils.ShaderUtils;
 
 public abstract class GLShape implements IGLShape {
 
 	String e_ID;
-	GameEngine engine;
+	RenderEngine engine;
 	int summit_count;
 
 	int vao_shapeid;
@@ -27,16 +27,16 @@ public abstract class GLShape implements IGLShape {
 
 	boolean disposed = false;
 
-	public GLShape(String e_ID, GameEngine engine, String vertshader, String fragshader) {
+	public GLShape(String e_ID, RenderEngine engine, String vertshader, String fragshader) {
 		this.e_ID = e_ID;
 		this.engine = engine;
 
 		// Shaders
-		shader_vertid = Utils.loadShader(vertshader, GL20.GL_VERTEX_SHADER);
-		shader_fragid = Utils.loadShader(fragshader, GL20.GL_FRAGMENT_SHADER);
+		shader_vertid = ShaderUtils.loadShader(vertshader, GL20.GL_VERTEX_SHADER);
+		shader_fragid = ShaderUtils.loadShader(fragshader, GL20.GL_FRAGMENT_SHADER);
 		shader_progid = GL20.glCreateProgram();
-		Utils.checkAndAttach(shader_progid, shader_vertid);
-		Utils.checkAndAttach(shader_progid, shader_fragid);
+		ShaderUtils.checkAndAttach(shader_progid, shader_vertid);
+		ShaderUtils.checkAndAttach(shader_progid, shader_fragid);
 		GL20.glBindAttribLocation(shader_progid, 0, "in_position");
 		GL20.glBindAttribLocation(shader_progid, 1, "in_color");
 		GL20.glLinkProgram(shader_progid);
@@ -52,7 +52,7 @@ public abstract class GLShape implements IGLShape {
 		vao_shapeid = GL30.glGenVertexArrays();
 	}
 
-	public GLShape(String e_ID, GameEngine engine) {
+	public GLShape(String e_ID, RenderEngine engine) {
 		this(e_ID, engine, "shaders/id_vertex.glsl", "shaders/id_fragment.glsl");
 	}
 
