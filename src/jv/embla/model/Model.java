@@ -1,15 +1,11 @@
 package jv.embla.model;
 
 import java.awt.Color;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.Semaphore;
 
 // GOM of the world.
 public class Model {
-  // Mutex.
-  private final Semaphore mutex = new Semaphore(1);
-
   // To parse the GOM.
   public final String ID;
   public String[] classes;
@@ -45,20 +41,20 @@ public class Model {
   }
 
   // Provide a list of changes between two models.
-  public static ArrayList<Model> diff(Model old, Model fresh) {
-    ArrayList<Model> changes = new ArrayList<>();
+  public static HashMap<String, Model> diff(Model old, Model fresh) {
+    HashMap<String, Model> changes = new ArrayList<>();
 
     if (old.ID != "root") {
       if (!old.isEqual(fresh)) {
-        changes.add(fresh);
+        changes.put(old.ID, fresh);
       }
     }
 
     for (Model child: old.children) {
       Optional<Model> brother = fresh.getElementById(child.ID);
       if (brother.isPresent()) {
-        ArrayList<Model> temp = diff(child, brother.get());
-        changes.addAll(temp);
+        HashMap<String, Model> temp = diff(child, brother.get());
+        changes.putAll(temp);
       }
     }
 
@@ -98,21 +94,4 @@ public class Model {
 
     return stringReturn.toString();
   }
-
-    // Acquire the mutex.
-  public void acquire() {
-	  try {
-		  mutex.acquire();
-	  }
-	  catch(InterruptedException e) {
-		  e.printStackTrace();
-	  }
-  }
-
-  // Release the mutex.
-  public void release() {
-    mutex.release();
-  }
-
-
 }

@@ -4,11 +4,11 @@
             [clj.embla.gom :as gom])
   (:gen-class))
 
-(def re (RenderEngine. 400 400 "Embla"))
+(def render-engine (RenderEngine. 400 400 "Embla"))
 
 (defn embla-run
   "Launch Embla. REPL live coding optional"
   [& args]
-  (let [thread (Thread. re)]
+  (let [thread (Thread. render-engine)]
     (.start thread)))
 

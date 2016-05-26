@@ -2,14 +2,14 @@
   (:require [clojure.core.async
              :as async
              :refer [>! <! >!! <!! go go-loop chan buffer close! thread
-                     alts! alts!! timeout]]
-            ;; [embla.callbacks :as cbacks])
-            )
+                     alts! alts!! timeout]])
+  (:import [java.util.concurrent Semaphore]) 
   (:gen-class))
 
 ;; Basic signals for handling.
 (def keyboard-input (chan))
 (def custom-signals '())
+(def mutex (Semaphore. 1))
 
 (defn timer
   "Gives a timer, starting at 0. Count every second."
@@ -63,19 +63,11 @@
     (signal-register name channel)
     `(go-loop []
        (let [~'msg (<! channel)]
-         (.acquire gom)
+         (.acquire mutex)
          ~@code
-         (.release gom)
-         (.diff gom))
+         (.release mutex)
+         (Model/diff old new))
        (recur))))
-
-; (Println custom-signals)
-; (macroexpand '(create-signal move))
-; (search-signal "enemy")
-; (macroexpand '(defsigf enemy
-;                 (if (msg < 3)
-;                   (println "Gloups")
-;                   (println "Pas Gloups"))))
 
 (defmacro combine
   [name1 name2 sig-name func]
@@ -92,11 +84,6 @@
           (>! chan (func msg1 msg2)))
         (recur))
       (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) channel (atom '())) %)))))
-
-; (defsigf enemy
-;   (if (< msg 3)
-;     (println "Gloups")
-;     (println "Pas Gloups")))
 
 (defn broadcast-all
   "Transfer the value from the channel to all functions which need it."

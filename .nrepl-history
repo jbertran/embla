@@ -171,3 +171,47 @@ ls
 (boot (run))
 (boot (build))
 (boot (run))
+(defrect 'truc')
+(use 'clj.embla.gom)
+(build)
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))
+(boot (build))
+(use 'clj.embla.signals)
+(use 'clj.embla.gom)
+(defrect)
+(macroexpand '(defrect))
+(macroexpand '(defrect 'truc'))
+(macroexpand '(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2}))
+re
+(use 'clj.embla.core)
+re
+`re
+(boot (build))
+(use 'clj.embla.gom)
+re
+`re
+(macroexpand '(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2}))
+(boot (build))
+(use 'clj.embla.gom)
+(macroexpand '(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2}))
+`re
+(use 'clj.embla.core)
+`re
+(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2})
+(boot (build))
+(use 'clj.embla.gom)
+(use 'clj.embla.core)
+(macroexpand '(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2}))
+(macroexpand '(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2 :color red}))
+(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2})
+(import 'org.lwjgl.util.Color)
+(Color.)
+(boot (build))
+(use 'clj.embla.gom)
+(use 'clj.embla.core)
+black
+(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2 :color black})
+(defrect {:id "truc" :length 400 :height 400 :x 2 :y 2 :color black})

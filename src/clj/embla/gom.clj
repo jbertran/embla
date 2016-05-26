@@ -1,5 +1,8 @@
 (ns clj.embla.gom
-  (:import [jv.embla.model Circle Model Rectangle Shape]))
+  (:import [jv.embla.model Circle Model Rectangle Shape]
+           [java.awt Color]))
+
+(def black (Color. 0 0 0))
 
 (defmacro add-children
   "Allow to dynamically add children. Use it to add children to an existent node."
@@ -17,9 +20,7 @@
 (defmacro defgom
   "Creates the GOM. Full or Empty."
   ([name]
-   `(let [model# (Model. -1 -1 nil "root")]
-      (.addGLShape re model#)
-      model#))
+   `(Model. -1 -1 nil "root"))
   ([name & body]
    (let [sym (gensym)]
      `(let [~sym (Model. -1 -1 nil "root")]
@@ -29,48 +30,106 @@
 (defmacro defrect
   "Creates a rectangle. Full or Empty."
   ([variables]
-   `(Rectangle. ~(variables :x)
-                ~(variables :y)
-                ~(variables :length)
-                ~(variables :height)
-                ~(variables :id)))
+   `(let [model# (Rectangle. ~(variables :x)
+                             ~(variables :y)
+                             ~(variables :length)
+                             ~(variables :height)
+                             ~(variables :color)
+                             ~(variables :id))]
+      (.addGLShape clj.embla.core/render-engine model#)
+      model#))
   ([variables & body]
    (let [sym (gensym)]
      `(let [~sym (Rectangle. ~(variables :x)
                              ~(variables :y)
                              ~(variables :length)
                              ~(variables :height)
+                             ~(variables :color)
                              ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
+        (.addGLShape clj.embla.core/render-engine ~sym)
         ~sym))))
 
 (defmacro defcircle
   "Creates a circle. Full or Empty."
   ([variables]
-   `(Circle. ~(variables :x)
-             ~(variables :y)
-             ~(variables :radius)
-             ~(variables :id)))
+   `(let [model# (Circle. ~(variables :x)
+                          ~(variables :y)
+                          ~(variables :radius)
+                          ~(variables :color)
+                          ~(variables :id))]
+      (.addGLShape re model#)
+      model#))
   ([variables & body]
    (let [sym (gensym)]
      `(let [~sym (Circle. ~(variables :x)
                           ~(variables :y)
                           ~(variables :radius)
+                          ~(variables :color)
                           ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
+        (.addGLShape re ~sym)
         ~sym))))
 
 (defmacro defshape
   "Creates a shape. Full or Empty."
   ([variables]
-   `(Shape. ~(variables :x)
-            ~(variables :y)
-            ~(variables :id)))
+   `(let [model# (Shape. ~(variables :x)
+                         ~(variables :y)
+                         ~(variables :points)
+                         ~(variables :id))]
+      (.addGLShape re model#)
+      model#))
   ([variables & body]
    (let [sym (gensym)]
      `(let [~sym (Shape. ~(variables :x)
                          ~(variables :y)
+                         ~(variables :points)
                          ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
+        (.addGLShape re ~sym)
         ~sym))))
 
+(defmacro deftriangle
+  "Creates a triangle."
+  ([variables]
+   `(let [model# (Triangle. ~(variables :a)
+                            ~(variables :b)
+                            ~(variables :c)
+                            ~(variables :color)
+                            ~(variables :id))]
+      (.addGLShape re model#)
+      model#))
+  ([variables & body]
+   (let [sym (gensym)]
+     `(let [~sym (Triangle. ~(variables :a)
+                            ~(variables :b)
+                            ~(variables :c)
+                            ~(variables :color)
+                            ~(variables :id))]
+        ~@(macroexpand `(add-children-list ~sym ~@body))
+        (.addGLShape re ~sym)
+        ~sym))))
+
+(defmacro defsprite
+  "Creates a circle. Full or Empty."
+  ([variables]
+   `(let [model# (Sprite. ~(variables :x)
+                          ~(variables :y)
+                          ~(variables :width)
+                          ~(variables :height)
+                          ~(variables :path)
+                          ~(variables :id))]
+      (.addGLShape re model#)
+      model#))
+  ([variables & body]
+   (let [sym (gensym)]
+     `(let [~sym (Sprite. ~(variables :x)
+                          ~(variables :y)
+                          ~(variables :width)
+                          ~(variables :height)
+                          ~(variables :path)
+                          ~(variables :id))]
+        ~@(macroexpand `(add-children-list ~sym ~@body))
+        (.addGLShape re ~sym)
+        ~sym))))

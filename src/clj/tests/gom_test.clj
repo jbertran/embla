@@ -1,5 +1,5 @@
-(ns embla.tests
-  (:require [embla.gom :as gom]))
+(ns clj.embla.tests
+  (:require [clj.embla.gom :as gom]))
 
 ;; Debug purposes.
 (println (.toString (gom/defgom "Root"
