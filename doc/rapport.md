@@ -318,6 +318,7 @@ Notre application se divise en quatre parties distinctes.
 
 #### Modèle
 
+<<<<<<< HEAD
 Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de
 l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose
 ensuite de n fils, puisque le monde peut être composé d'autant de personnages
@@ -348,6 +349,31 @@ Afin de pouvoir représenter et manipuler les données comme un arbre, un jeu de
 ```
 
 ![Exemple d'affichage à partir du modèle](resources/model_to_view.png "Exemple d'affichage à partir du modèle")
+=======
+Le modèle — en Java — est représenté sous forme d'arbre n-aire. La racine de
+l'arbre est invariable, et représente son point d'entrée. Chaque noeud dispose
+ensuite de n fils, puisque le monde peut être composé d'autant de personnages
+ou d'éléments que l'on souhaite sur une même surface. En effet, chaque élément
+du jeu est représenté par un noeud de l'arbre. Un personnage, un élément du jeu,
+ou un élément de décor sera représenté par un noeud.
+
+Dans un jeu à défilement horizontal, on peut imaginer que le noeud de l'arbre
+aura deux fils : le ciel et le sol. Le sol aura tous les objets reposant sur le
+sol comme fils, alors que le ciel aura comme fils toutes les objets reposant
+dans le ciel. Cela permet également de monter au niveau de détail désiré : un
+personnage peut avoir divers objets, chacun représenté par un fils. Et chaque
+objet peut lui-même avoir différentes caractéristiques.
+
+Enfin, les possibilités de modularité sont nombreuses : les noeuds de bases
+permettent de créer n'importe quel élément. En héritant de ces noeuds, on peut
+créer de nouveaux éléments, et lui attribuer n'importe quel caractéristique.
+On peut donc obtenir de nouveaux personnages, de nouveaux ennemis, de nouveaux
+décors, etc... Puisque le jeu obtenu sera en 2D, la class Sprite peut
+représenter n'importe quel élément.
+
+![Exemple d'affichage à partir du modèle](resources/model_to_view.png
+"Exemple d'affichage à partir du modèle")
+>>>>>>> master
 
 #### Signaux
 
@@ -441,9 +467,6 @@ GL30.glBindVertexArray(0);
 GL20.glUseProgram(0);
 ```
 
-Cette logique que l'on désire cacher à l'utilisateur se trouve dans la
-fonction de rendu propre à chaque sous-classe de `GLShape`
-
 ##### Gestion des formes
 
 Nos formes OpenGL servent uniquement à identifier les buffers présents sur la
@@ -499,21 +522,19 @@ causés par une éventuelle modification directe du modèle par l'utilisateur, e
 dehors du cadre du DSL qui lui est fourni.
 
 ```java
-try {
-			HashMap<String, Model> modelchanges = changes.get();
-			for (Model modelch : modelchanges.values()) {
-				GLShape s = glShapes.get(modelch.ID);
-				if (s != null)
-					s.propagate(modelch);
-				else
-					throw new RuntimeException("Attempted to propagate changes to GLShape
-                                          unknown to the engine");
-			}
-		} finally {
-			// Changes are propagated, now draw the world
-			changes = Optional.empty();
-			draw_model_item(world);
+// Propagate model changes to GL buffers
+if (changes.isPresent()) {
+	for (Model modelch : changes.get()) {
+		GLShape s = glShapes.get(modelch.ID);
+		if (s != null)
+			s.propagate(modelch);
+ 		else
+			throw new RuntimeException(
+				"Attempted to propagate changes to GLShape unknown to the engine");
 		}
+}
+// Redraw the scene
+draw_model_item(world);
 ```
 
 La variable globale qui contient les changements de l'ancien modèle au nouveau

@@ -1,8 +1,8 @@
 (defproject gameloop "0.1.0-SNAPSHOT"
   :description         "2D openGL FRP"
   :url                 ""
-  :source-paths        ["src/clj"]
-  :java-source-paths   ["src/jv"]
+  :source-paths        ["src/clojure"]
+  :java-source-paths   ["src/java"]
   :license             { :name "MIT License"
                          :url "LICENSE" }
   :dependencies        [[org.clojure/clojure "1.8.0"]

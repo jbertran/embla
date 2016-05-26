@@ -33,4 +33,8 @@
 (defrect [0 0 0 0 "rect"])
 (defrect [0 0 0 0 0])
 (boot (build))
+<<<<<<< HEAD
 (use 'embla.gom)
+=======
+(use 'jv.embla.view.glUtils.GameEngine)
+>>>>>>> master
