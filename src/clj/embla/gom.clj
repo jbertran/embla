@@ -1,4 +1,4 @@
-(ns embla.gom
+(ns clj.embla.gom
   (:import [jv.embla.model Circle Model Rectangle Shape]))
 
 (defmacro add-children
@@ -27,15 +27,15 @@
 (defmacro defrect
   "Creates a rectangle. Full or Empty."
   ([variables]
-   `(Rectangle. ~(variables :x) 
-                ~(variables :y) 
+   `(Rectangle. ~(variables :x)
+                ~(variables :y)
                 ~(variables :length)
                 ~(variables :height)
                 ~(variables :id)))
   ([variables & body]
    (let [sym (gensym)]
-     `(let [~sym (Rectangle. ~(variables :x) 
-                             ~(variables :y) 
+     `(let [~sym (Rectangle. ~(variables :x)
+                             ~(variables :y)
                              ~(variables :length)
                              ~(variables :height)
                              ~(variables :id))]

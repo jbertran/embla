@@ -41,8 +41,7 @@ public class TextureLoader {
 			return new GLTexture(decoder.getWidth(), decoder.getHeight(), path, buf);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(-1);
+			throw new RuntimeException("Failed to load PNG");
 		}
-		return null;
 	}
 }

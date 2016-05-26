@@ -11,6 +11,8 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .nrepl-port
+.nrepl-history
+.classpath
 *~
 *.log
 .DS_Store

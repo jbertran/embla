@@ -12,6 +12,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
@@ -21,18 +22,11 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import jv.embla.model.Circle;
-import jv.embla.model.Model;
-import jv.embla.model.Rectangle;
-import jv.embla.model.Sprite;
-import jv.embla.model.Triangle;
-import jv.embla.view.glShapes.GLCircle;
-import jv.embla.view.glShapes.GLRectangle;
-import jv.embla.view.glShapes.GLShape;
-import jv.embla.view.glShapes.GLSprite;
-import jv.embla.view.glShapes.GLTriangle;
+import jv.embla.model.*;
+import jv.embla.view.glShapes.*;
+import jv.embla.view.glUtils.*;
 
-public class GameEngine {
+public class GameEngine implements Runnable {
 	// The window handle
 	private long window;
 	private GLFWKeyCallback   keyCallback;
@@ -57,7 +51,7 @@ public class GameEngine {
 	}
 
 	public void run() {
-		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+		System.out.println("Running LWJGL " + Version.getVersion());
 		try {
 			init();
 			glLoop();
@@ -88,12 +82,13 @@ public class GameEngine {
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-		
+
+		// Shader language options
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		
+
 		// Create the window
 		window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
 		if ( window == NULL )
@@ -126,10 +121,13 @@ public class GameEngine {
 
 		/** Setup the projection, enable textures **/
 		GL.createCapabilities();
+		System.out.println(GL11.glGetString(GL11.GL_VERSION));
+		/*
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(-1, 1, -1, 1, -1, 1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		*/
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
@@ -145,21 +143,21 @@ public class GameEngine {
 		Rectangle r = new Rectangle(width/4, 3*height/4, width/2, height/2, Color.red, "rect");
 		Circle c = new Circle(width/2, height/2, height/3, Color.yellow, "circ");
 		Triangle t = new Triangle(tpos[0], tpos[1], tpos[2], Color.blue, "tri");
-		Sprite s = new Sprite(0, height, width/8, height/8, "resources/link.gif", "sprite");
+		// Sprite s = new Sprite(0, height, width/8, height/8, "resources/link.png", "sprite");
 		world.addChild(r);
 		r.addChild(c);
 		c.addChild(t);
-		world.addChild(s);
+		// world.addChild(s);
 
 		GLRectangle rect = new GLRectangle("rect", this, width/4, 3*height/4, width/2, height/2, Color.red);
 		GLCircle circ = new GLCircle("circ", this, width/2, height/2, height/3, Color.yellow);
 		GLTriangle tri = new GLTriangle("tri", this, new int[] {0, 0}, new int[]{width/2, height}, new int[]{width, 0}, Color.blue);
-		GLSprite sprite = new GLSprite("sprite", this, this.loader, "resources/link.gif", 0, height, width/8, height/8);
+		// GLSprite sprite = new GLSprite("sprite", this, this.loader, "resources/link.gif", 0, height, width/8, height/8);
 
 		glShapes.put(rect.id(), rect);
 		glShapes.put(circ.id(), circ);
 		glShapes.put(tri.id(), tri);
-		glShapes.put(sprite.id(), sprite);
+		// glShapes.put(sprite.id(), sprite);
 
 		try {
 			while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
@@ -193,7 +191,8 @@ public class GameEngine {
 				else
 					throw new RuntimeException("Attempted to propagate changes to GLShape unknown to the engine");
 			}
-		} finally {
+		} catch (NoSuchElementException e) {
+		}	finally {
 			// Changes are propagated, now draw the world
 			changes = Optional.empty();
 			draw_model_item(world);

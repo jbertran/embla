@@ -1,4 +1,4 @@
-(ns embla.signals
+(ns clj.embla.signals
   (:require [clojure.core.async
              :as async
              :refer [>! <! >!! <!! go go-loop chan buffer close! thread
@@ -21,7 +21,7 @@
       (recur (inc times)))
     time))
 
-(defn update-chan 
+(defn update-chan
   "Push the value to keyboard-input. Little functions to be used in java."
   [key-press state]
   (go (>! keyboard-input (list key-press state))))
