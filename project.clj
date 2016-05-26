@@ -7,8 +7,8 @@
                          :url "LICENSE" }
   :dependencies        [[org.clojure/clojure "1.8.0"]
                         [org.clojure/core.async "0.2.374"]]
-  :resource-paths      ["lwjgl_jar/lwjgl.jar"]
-  :jvm-opts            [;"-XstartOnFirstThread"
+  :resource-paths      ["lwjgl_jar/lwjgl.jar" "resources/pngdecoder-1.0.jar"]
+  :jvm-opts            ["-XstartOnFirstThread"
                         ~(str "-Djava.library.path=lwjgl_native/:" 
                               (System/getProperty "java.library.path"))]
   :main                ^:skip-aot embla.core

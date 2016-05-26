@@ -1,4 +1,4 @@
-(ns embla.emblagl
+(ns clj.embla.emblagl
   (:import org.lwjgl.glfw.GLFW
            org.lwjgl.opengl.GL
            org.lwjgl.opengl.GL11

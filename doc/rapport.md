@@ -347,8 +347,7 @@ Afin de pouvoir représenter et manipuler les données comme un arbre, un jeu de
   (defrect {:x 0 :y 200 :length 400 :width 100 :id "earth"}))
 ```
 
-![Exemple d'affichage à partir du modèle](resources/model_to_view.png
-"Exemple d'affichage à partir du modèle")
+![Exemple d'affichage à partir du modèle](resources/model_to_view.png "Exemple d'affichage à partir du modèle")
 
 #### Signaux
 

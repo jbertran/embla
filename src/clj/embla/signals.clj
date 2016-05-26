@@ -29,7 +29,7 @@
 (defn search-signal
   "Search for the named signal into the existing signals. false if signal does not exist."
   [name]
-  (If (empty? custom-signals)
+  (if (empty? custom-signals)
     false
     (loop [[sig & signals] custom-signals]
       (let [sig-name (first sig)]
@@ -69,13 +69,13 @@
          (.diff gom))
        (recur))))
 
-(Println custom-signals)
-(macroexpand '(create-signal move))
-(search-signal "enemy")
-(macroexpand '(defsigf enemy
-                (if (msg < 3)
-                  (println "Gloups")
-                  (println "Pas Gloups"))))
+; (Println custom-signals)
+; (macroexpand '(create-signal move))
+; (search-signal "enemy")
+; (macroexpand '(defsigf enemy
+;                 (if (msg < 3)
+;                   (println "Gloups")
+;                   (println "Pas Gloups"))))
 
 (defmacro combine
   [name1 name2 sig-name func]
@@ -91,12 +91,12 @@
               msg2 (<! sig2)]
           (>! chan (func msg1 msg2)))
         (recur))
-      (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) custom (atom '())) %)))))
+      (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) channel (atom '())) %)))))
 
-(defsigf enemy
-  (if (< msg 3)
-    (println "Gloups")
-    (println "Pas Gloups")))
+; (defsigf enemy
+;   (if (< msg 3)
+;     (println "Gloups")
+;     (println "Pas Gloups")))
 
 (defn broadcast-all
   "Transfer the value from the channel to all functions which need it."

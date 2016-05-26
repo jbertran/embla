@@ -32,3 +32,5 @@
 (defrect (0 0 0 0 "rect"))
 (defrect [0 0 0 0 "rect"])
 (defrect [0 0 0 0 0])
+(boot (build))
+(use 'embla.gom)

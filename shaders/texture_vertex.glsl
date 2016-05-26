@@ -1,4 +1,4 @@
-#version 130
+#version 410
 
 in vec4 in_Position;
 in vec4 in_Color;
@@ -9,7 +9,7 @@ out vec2 pass_TextureCoord;
 
 void main(void) {
 	gl_Position = in_Position;
-	
+
 	pass_Color = in_Color;
 	pass_TextureCoord = in_TextureCoord;
 }
