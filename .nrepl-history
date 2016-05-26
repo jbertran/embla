@@ -164,3 +164,10 @@ mespace 0x6d96b5d8 "boot.git"] #object[clojure.lang.Namespace 0x770dd01f "dynapa
 (boot (run))
 ls
 (boot (build))
+(boot (run))
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))

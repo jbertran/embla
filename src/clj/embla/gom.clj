@@ -17,7 +17,9 @@
 (defmacro defgom
   "Creates the GOM. Full or Empty."
   ([name]
-   `(Model. -1 -1 nil "root"))
+   `(let [model# (Model. -1 -1 nil "root")]
+      (.addGLShape re model#)
+      model#))
   ([name & body]
    (let [sym (gensym)]
      `(let [~sym (Model. -1 -1 nil "root")]
@@ -71,3 +73,4 @@
                          ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
         ~sym))))
+
