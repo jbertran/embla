@@ -81,13 +81,13 @@ public class RenderEngine extends Thread {
     }
 
     public void clear() {
-	synchronized(atomic) {
+	// synchronized(atomic) {
 	    this.glShapes.clear();
 	    this.newList.clear();
 	    this.world = new Model(-1, -1, null, "root");
 	    this.old = null;
 	    this.changes = Optional.empty();
-	}
+        // }
     }
 
     public void run() {
@@ -172,7 +172,7 @@ public class RenderEngine extends Thread {
 	
 	try {
 	    while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
-		synchronized(atomic) {
+		// synchronized(atomic) {
 		    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		    // Add the shapes that may have been created
 		    if (newList.size() > 0) {
@@ -187,7 +187,7 @@ public class RenderEngine extends Thread {
 		    
 		    // Poll for window events.
 		    glfwPollEvents();
-		}
+		    // }
 	    }
 	}
 	catch (Exception e) {

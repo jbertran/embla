@@ -25,3 +25,11 @@
   "Show the given node"
   [node]
   (println (.toString node)))
+
+(defn getnodebyID
+  "Get the render engine's current model's node by element"
+  []
+  (let [opt (.getElementById (.getWorld render-engine))]
+    (if (.isPresent opt)
+      (.get opt)
+      nil)))
