@@ -35,6 +35,7 @@ public class RenderEngine extends Thread {
     private Model world, old;
     private ArrayList<Model> newList;
     private String title;
+    private boolean atomic;
     public int width, height;
 
     public RenderEngine(int width, int height, String title) {
@@ -48,6 +49,45 @@ public class RenderEngine extends Thread {
 	this.old = null;
 	this.newList = new ArrayList<>();
 	this.changes = Optional.empty();
+    }
+
+    public TextureLoader getLoader() {
+	return loader;
+    }
+
+    public Model getWorld() {
+	return world;
+    }
+
+    public Model getOldWorld() {
+	return old;
+    }
+    
+    public void setOldWorld(Model old) {
+	this.old = old;
+    }
+
+    public void setChanges(HashMap<String, Model> hmap) {
+	this.changes = Optional.of(hmap);
+    }
+
+    public void addGLShape(Model m) {
+        newList.add(m);
+    }
+	
+    public void updateWorld(Model m) {
+	this.world = m;
+	this.old = null;
+    }
+
+    public void clear() {
+	synchronized(atomic) {
+	    this.glShapes.clear();
+	    this.newList.clear();
+	    this.world = new Model(-1, -1, null, "root");
+	    this.old = null;
+	    this.changes = Optional.empty();
+	}
     }
 
     public void run() {
@@ -83,9 +123,9 @@ public class RenderEngine extends Thread {
 	    throw new IllegalStateException("Unable to initialize GLFW");
 
 	// Configure our window
-	glfwDefaultWindowHints(); // optional, the current window hints are already the default
-	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+	glfwDefaultWindowHints();
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	// Shader language options
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -98,17 +138,14 @@ public class RenderEngine extends Thread {
 	if ( window == NULL )
 	    throw new RuntimeException("Failed to create the GLFW window");
 
-	// Setup a key callback. It will be called every time a key is pressed, repeated or released.
+	// Setup a key callback.
 	glfwSetKeyCallback(window, keyCallback = new KeyCallbacks());
 
 	// Get the resolution of the primary monitor
 	GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	// Center our window
-	glfwSetWindowPos(
-			 window,
-			 (vidmode.width() - width) / 2,
-			 (vidmode.height() - height) / 2
-			 );
+	glfwSetWindowPos(window, (vidmode.width() - width) / 2, 
+			 (vidmode.height() - height) / 2);
 	// Make the OpenGL context current
 	glfwMakeContextCurrent(window);
 	// Enable v-sync
@@ -129,79 +166,28 @@ public class RenderEngine extends Thread {
 	*/
     }
     
-    public TextureLoader getLoader() {
-	return loader;
-    }
-
-    public Model getWorld() {
-	return world;
-    }
-
-    public Model getOldWorld() {
-	return old;
-    }
-    
-    public void setOldWorld(Model old) {
-	this.old = old;
-    }
-
-    public void setChanges(HashMap<String, Model> hmap) {
-	this.changes = Optional.of(hmap);
-    }
-
-    // TODO: move this logic to a constructor from a Model instance for each GLShape
-    public void addGLShape(Model m) {
-        newList.add(m);
-    }
-	
-    public void updateWorld(Model m) {
-	this.world = m;
-	this.old = null;
-    }
-
     public void glLoop() {
 	// Set the clear color
 	glClearColor(0.4f, 0.6f, 0.9f, 0f);
-
-	// Run the rendering loop until the user has attempted to close the window
-	int[][] tpos = new int[3][];
-	tpos[0] = new int[] {100, 100};
-	tpos[1] = new int[] {100, 200};
-	tpos[2] = new int[] {50, 200};
-	Rectangle r = new Rectangle(width/4, 3*height/4, width/2, height/2, Color.red, "rect");
-	Circle c = new Circle(width/2, height/2, height/3, Color.yellow, "circ");
-	Triangle t = new Triangle(tpos[0], tpos[1], tpos[2], Color.blue, "tri");
-	Sprite s = new Sprite(0, height, width/8, height/8, "resources/link.png", "sprite");
-	world.addChild(r);
-	// world.addChild(s);
-
-	GLRectangle rect = new GLRectangle("rect", this, width/4, 3*height/4, width/2, height/2, Color.red);
-	GLCircle circ = new GLCircle("circ", this, width/2, height/2, height/3, Color.yellow);
-	GLTriangle tri = new GLTriangle("tri", this, new int[] {0, 0}, new int[]{width/2, height}, new int[]{width, 0}, Color.blue);
-	GLSprite sprite = new GLSprite("sprite", this, this.loader, "resources/link.png", 0, height, width/8, height/8);
-
-	glShapes.put(rect.id(), rect);
-	glShapes.put(circ.id(), circ);
-	glShapes.put(tri.id(), tri);
-	glShapes.put(sprite.id(), sprite);
-
+	
 	try {
 	    while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-		// Add the shapes that may have been created
-		if (newList.size() > 0) {
-		    for (Model m : newList)
-			glShapes.put(m.ID, GLShapeFactory.makeShape(this, m));
-		    newList.clear();
+		synchronized(atomic) {
+		    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		    // Add the shapes that may have been created
+		    if (newList.size() > 0) {
+			for (Model m : newList)
+			    glShapes.put(m.ID, GLShapeFactory.makeShape(this, m));
+			newList.clear();
+		    }
+		    // Draw the model with OpenGL, including changes if applicable
+		    redraw();
+		    
+		    GLFW.glfwSwapBuffers(window);
+		    
+		    // Poll for window events.
+		    glfwPollEvents();
 		}
-		// Draw the model with OpenGL, including changes if applicable
-		redraw();
-
-		GLFW.glfwSwapBuffers(window); // swap the color buffers
-
-		// Poll for window events. The key callback above will only be
-		// invoked during this call.
-		glfwPollEvents();
 	    }
 	}
 	catch (Exception e) {

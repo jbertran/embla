@@ -8,6 +8,20 @@
 (defn embla-run
   "Launch Embla. REPL live coding optional"
   [& args]
-  ;; (let [thread (Thread. render-engine)]
-    (.start render-engine))
+  (.start render-engine))
 
+(defn clear-all
+  "Clear the model and the view"
+  []
+  (.clear render-engine)
+)
+
+(defn show-world
+  "Show the current model"
+  []
+  (println (.toString (.getWorld render-engine))))
+
+(defn show-node
+  "Show the given node"
+  [node]
+  (println (.toString node)))
