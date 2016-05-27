@@ -1,69 +1,29 @@
 package jv.embla.engine;
 
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.lwjgl.Version;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.glfw.*;
 
-import jv.embla.model.Circle;
-import jv.embla.model.Model;
-import jv.embla.model.Rectangle;
-import jv.embla.model.Sprite;
-import jv.embla.model.Triangle;
-import jv.embla.view.glShapes.GLCircle;
-import jv.embla.view.glShapes.GLRectangle;
-import jv.embla.view.glShapes.GLShape;
-import jv.embla.view.glShapes.GLSprite;
-import jv.embla.view.glShapes.GLTriangle;
+import jv.embla.model.*;
+import jv.embla.view.glShapes.*;
+import jv.embla.utils.KeyCallbacks;
 import jv.embla.view.glUtils.TextureLoader;
 
-public class RenderEngine implements Runnable {
+public class RenderEngine extends Thread {
     // The window handle
     private long window;
-    private GLFWKeyCallback   keyCallback;
+    private GLFWKeyCallback keyCallback;
 
     float [] pos = { 1f, 1f, -1f, 1f, 1f, -1f };
     float [] posR = { 0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f };
@@ -72,7 +32,8 @@ public class RenderEngine implements Runnable {
     private HashMap<String, GLShape> glShapes;
     private TextureLoader loader;
     private Optional<HashMap<String, Model>> changes;
-    private Model world;
+    private Model world, old;
+    private ArrayList<Model> newList;
     private String title;
     public int width, height;
 
@@ -84,6 +45,8 @@ public class RenderEngine implements Runnable {
 	this.glShapes = new HashMap<>();
 	this.loader = new TextureLoader();
 	this.world = new Model(-1, -1, null, "root");
+	this.old = null;
+	this.newList = new ArrayList<>();
 	this.changes = Optional.empty();
     }
 
@@ -91,6 +54,7 @@ public class RenderEngine implements Runnable {
 	System.out.println("Running LWJGL " + Version.getVersion());
 	try {
 	    init();
+	
 	    glLoop();
 
 	    // Destroy window and window callbacks
@@ -102,6 +66,9 @@ public class RenderEngine implements Runnable {
 	finally {
 	    // Terminate GLFW and free the GLFWErrorCallback
 	    glfwTerminate();
+	    this.world = new Model(-1, -1, null, "root");
+	    this.old = null;
+	    this.glShapes.clear();
 	    System.out.println("LWJGL loop terminating.");
 	    errorCallback.release();
 	}
@@ -132,13 +99,7 @@ public class RenderEngine implements Runnable {
 	    throw new RuntimeException("Failed to create the GLFW window");
 
 	// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-	glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
-		@Override
-		public void invoke(long window, int key, int scancode, int action, int mods) {
-		    if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-			glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
-		}
-	    });
+	glfwSetKeyCallback(window, keyCallback = new KeyCallbacks());
 
 	// Get the resolution of the primary monitor
 	GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -167,32 +128,35 @@ public class RenderEngine implements Runnable {
 	  GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	*/
     }
-	
+    
+    public TextureLoader getLoader() {
+	return loader;
+    }
+
+    public Model getWorld() {
+	return world;
+    }
+
+    public Model getOldWorld() {
+	return old;
+    }
+    
+    public void setOldWorld(Model old) {
+	this.old = old;
+    }
+
+    public void setChanges(HashMap<String, Model> hmap) {
+	this.changes = Optional.of(hmap);
+    }
+
     // TODO: move this logic to a constructor from a Model instance for each GLShape
     public void addGLShape(Model m) {
-	if (m instanceof Circle) {
-	    Circle c = (Circle) m;
-	    glShapes.put(c.ID, new GLCircle(c.ID, this, c.x, c.y, c.radius, c.color));
-	}
-	else if (m instanceof Rectangle) {
-	    Rectangle r = (Rectangle) m;
-	    glShapes.put(r.ID, new GLRectangle(r.ID, this, r.x, r.y, r.width, r.height, r.color));
-	}
-	else if (m instanceof Triangle) {
-	    Triangle t = (Triangle) m;
-	    glShapes.put(t.ID, new GLTriangle(t.ID, this, t.a, t.b, t.c, t.color));
-	}
-	else if (m instanceof Sprite) {
-	    Sprite s = (Sprite) m;
-	    glShapes.put(s.ID, new GLSprite(s.ID, this, this.loader, s.path, s.x, s.y, s.width, s.height));
-	}
-	else {
-	    throw new RuntimeException("Attempted to push model known of an unknown type");
-	}
+        newList.add(m);
     }
 	
     public void updateWorld(Model m) {
 	this.world = m;
+	this.old = null;
     }
 
     public void glLoop() {
@@ -208,9 +172,7 @@ public class RenderEngine implements Runnable {
 	Circle c = new Circle(width/2, height/2, height/3, Color.yellow, "circ");
 	Triangle t = new Triangle(tpos[0], tpos[1], tpos[2], Color.blue, "tri");
 	Sprite s = new Sprite(0, height, width/8, height/8, "resources/link.png", "sprite");
-	world.addChild(t);
-	t.addChild(r);
-	t.addChild(c);
+	world.addChild(r);
 	// world.addChild(s);
 
 	GLRectangle rect = new GLRectangle("rect", this, width/4, 3*height/4, width/2, height/2, Color.red);
@@ -226,10 +188,13 @@ public class RenderEngine implements Runnable {
 	try {
 	    while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-		/**
-		 * draw the model with OpenGL, including changes if applicable
-		 */
+		// Add the shapes that may have been created
+		if (newList.size() > 0) {
+		    for (Model m : newList)
+			glShapes.put(m.ID, GLShapeFactory.makeShape(this, m));
+		    newList.clear();
+		}
+		// Draw the model with OpenGL, including changes if applicable
 		redraw();
 
 		GLFW.glfwSwapBuffers(window); // swap the color buffers
@@ -257,7 +222,7 @@ public class RenderEngine implements Runnable {
 	    }
 	    changes = Optional.empty();
 	} catch (NoSuchElementException e) {
-	}	finally {
+	} finally {
 	    // Changes are propagated, now draw the world
 	    draw_model_item(world);
 	}

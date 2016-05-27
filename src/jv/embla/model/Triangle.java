@@ -10,6 +10,7 @@ public class Triangle extends Model {
     this.a = a;
     this.b = b;
     this.c = c;
+    this.color = col;
   }
   
   public boolean isEqual(Triangle old) {
@@ -19,4 +20,12 @@ public class Triangle extends Model {
 	    this.b == old.b &&
 	    this.c == old.c);
   }
+
+    public Model clone() {
+	Triangle temp = new Triangle(a, b, c, color, ID);
+	for (Model child : children) {
+	    temp.addChild(child.clone());
+	}
+	return temp;
+    }
 }

@@ -1,4 +1,4 @@
-(ns clj.embla.tests
+(ns clj.tests.gom-test
   (:require [clj.embla.gom :as gom]))
 
 ;; Debug purposes.

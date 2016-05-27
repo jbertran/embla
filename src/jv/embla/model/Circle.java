@@ -18,4 +18,13 @@ public class Circle extends Model {
 	    this.color == old.color &&
 	    this.radius == old.radius);
   }
+
+    public Model clone() {
+	Circle temp = new Circle(x, y, radius, color, ID);
+	for (Model child : children) {
+	    temp.addChild(child.clone());
+	}
+	return temp;
+    }
+
 }

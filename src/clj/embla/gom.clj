@@ -2,7 +2,10 @@
   (:import [jv.embla.model Circle Model Rectangle Shape]
            [java.awt Color]))
 
-(def black (Color. 0 0 0))
+(defn color
+  "Define a Color class."
+  [x y z]
+  (Color. x y z))
 
 (defmacro add-children
   "Allow to dynamically add children. Use it to add children to an existent node."
@@ -58,7 +61,7 @@
                           ~(variables :radius)
                           ~(variables :color)
                           ~(variables :id))]
-      (.addGLShape re model#)
+      (.addGLShape clj.embla.core/render-engine model#)
       model#))
   ([variables & body]
    (let [sym (gensym)]
@@ -68,7 +71,7 @@
                           ~(variables :color)
                           ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
-        (.addGLShape re ~sym)
+        (.addGLShape clj.embla.core/render-engine ~sym)
         ~sym))))
 
 (defmacro defshape
@@ -78,7 +81,7 @@
                          ~(variables :y)
                          ~(variables :points)
                          ~(variables :id))]
-      (.addGLShape re model#)
+      (.addGLShape clj.embla.core/render-engine model#)
       model#))
   ([variables & body]
    (let [sym (gensym)]
@@ -87,7 +90,7 @@
                          ~(variables :points)
                          ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
-        (.addGLShape re ~sym)
+        (.addGLShape clj.embla.core/render-engine ~sym)
         ~sym))))
 
 (defmacro deftriangle
@@ -98,7 +101,7 @@
                             ~(variables :c)
                             ~(variables :color)
                             ~(variables :id))]
-      (.addGLShape re model#)
+      (.addGLShape clj.embla.core/render-engine model#)
       model#))
   ([variables & body]
    (let [sym (gensym)]
@@ -108,7 +111,7 @@
                             ~(variables :color)
                             ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
-        (.addGLShape re ~sym)
+        (.addGLShape clj.embla.core/render-engine ~sym)
         ~sym))))
 
 (defmacro defsprite
@@ -120,7 +123,7 @@
                           ~(variables :height)
                           ~(variables :path)
                           ~(variables :id))]
-      (.addGLShape re model#)
+      (.addGLShape clj.embla.core/render-engine model#)
       model#))
   ([variables & body]
    (let [sym (gensym)]
@@ -131,5 +134,5 @@
                           ~(variables :path)
                           ~(variables :id))]
         ~@(macroexpand `(add-children-list ~sym ~@body))
-        (.addGLShape re ~sym)
+        (.addGLShape clj.embla.core/render-engine ~sym)
         ~sym))))

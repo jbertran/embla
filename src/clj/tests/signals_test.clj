@@ -1,4 +1,4 @@
-(ns clj.embla.tests
+(ns clj.tests.signals-test
   (:require [clj.embla.signals :as sigs]))
 
 (create-signal enemy)

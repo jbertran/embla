@@ -1,14 +1,17 @@
 (ns clj.embla.signals
-  (:require [clojure.core.async
-             :as async
+  (:require [clojure.core.async :as async
              :refer [>! <! >!! <!! go go-loop chan buffer close! thread
-                     alts! alts!! timeout]])
+                     alts! alts!! timeout]]
+            [clj.embla.core :as core
+             :refer [render-engine]])
   (:import [java.util.concurrent Semaphore]) 
   (:gen-class))
 
 ;; Basic signals for handling.
 (def keyboard-input (chan))
 (def custom-signals '())
+
+;; Because it's useful.
 (def mutex (Semaphore. 1))
 
 (defn timer
@@ -62,11 +65,15 @@
   (let [channel (chan)]
     (signal-register name channel)
     `(go-loop []
-       (let [~'msg (<! channel)]
+       (let [~'msg (<! channel)
+             ~'world (.getWorld render-engine)]
          (.acquire mutex)
+         (.setOldWorld render-engine (.clone ~'world))
          ~@code
-         (.release mutex)
-         (Model/diff old new))
+         (.setChanges render-engine
+                      (Model/diff (.getOldWorld render-engine)
+                                  (.getWorld render-engine)))
+         (.release mutex))
        (recur))))
 
 (defmacro combine

@@ -14,4 +14,12 @@ public class Shape extends Model {
 	    this.y == old.y &&
 	    this.points == old.points);
   }
+
+    public Model clone() {
+	Shape temp = new Shape(x, y, points, ID);
+	for (Model child : children) {
+	    temp.addChild(child.clone());
+	}
+	return temp;
+    }
 }

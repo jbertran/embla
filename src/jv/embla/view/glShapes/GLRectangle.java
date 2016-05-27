@@ -54,12 +54,17 @@ public class GLRectangle extends GLShape implements IGLShape {
     glpos[5] = gly - glh;
     glpos[6] = glx;
     glpos[7] = gly - glh;
+    String r = "";
+    for (float i : glpos)
+	r += Float.toString(i) + " ";
+    System.out.println(r);
     positionToVBO(glpos);
     colorToVBO(c);
   }
 
   @Override
   public void render() {
+      //  System.out.println("render");
     GL20.glUseProgram(shader_progid);
     GL30.glBindVertexArray(vao_shapeid);
     // Positions

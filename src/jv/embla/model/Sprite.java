@@ -18,4 +18,12 @@ public class Sprite extends Model {
 	    this.height == old.height &&
 	    this.path == old.path);
   }
+
+    public Model clone() {
+	Sprite temp = new Sprite(x, y, width, height, path, ID);
+	for (Model child : children) {
+	    temp.addChild(child.clone());
+	}
+	return temp;
+    }
 }

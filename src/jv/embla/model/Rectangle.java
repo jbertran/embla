@@ -20,4 +20,12 @@ public class Rectangle extends Model {
 	    this.width == old.width &&
 	    this.height == old.height);
   }
+
+    public Model clone() {
+	Rectangle temp = new Rectangle(x, y, width, height, color, ID);
+	for (Model child : children) {
+	    temp.addChild(child.clone());
+	}
+	return temp;
+    }
 }

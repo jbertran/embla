@@ -2,6 +2,7 @@ package jv.embla.model;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Optional;
 
 // GOM of the world.
@@ -30,6 +31,14 @@ public class Model {
     this.children = new ArrayList<>();
   }
 
+    public Model clone() {
+	Model temp = new Model(x, y, classes, ID);
+	for (Model child : children) {
+	    temp.addChild(child.clone());
+	}
+	return temp;
+    }
+
   // Add the child to the children of the element.
   public void addChild(Model child) {
     this.children.add(child);
@@ -42,7 +51,7 @@ public class Model {
 
   // Provide a list of changes between two models.
   public static HashMap<String, Model> diff(Model old, Model fresh) {
-    HashMap<String, Model> changes = new ArrayList<>();
+    HashMap<String, Model> changes = new HashMap<>();
 
     if (old.ID != "root") {
       if (!old.isEqual(fresh)) {
