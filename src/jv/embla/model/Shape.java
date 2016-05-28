@@ -22,4 +22,22 @@ public class Shape extends Model {
 	}
 	return temp;
     }
+
+    public String toString(int tab) {
+	StringBuffer stringReturn = new StringBuffer();
+
+	for (int i = 0; i < tab; i++)
+	    stringReturn.append(" ");
+	stringReturn.append("(defshape {:x " + x + " :y " + y + " :points " + points + " :id " + ID + "}");
+
+	for (Model child: children) {
+	    stringReturn.append('\n');
+	    stringReturn.append(child.toString(tab + 2));
+	}
+
+	stringReturn.append(')');
+
+	return stringReturn.toString();
+
+    }
 }

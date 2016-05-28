@@ -28,4 +28,22 @@ public class Triangle extends Model {
 	}
 	return temp;
     }
+
+    public String toString(int tab) {
+	StringBuffer stringReturn = new StringBuffer();
+
+	for (int i = 0; i < tab; i++)
+	    stringReturn.append(" ");
+	stringReturn.append("(deftriangle {:a " + a.toString() + " :b " + b.toString() + " :c " + c.toString() + " :id " + ID + " :color " + color + "}");
+
+	for (Model child: children) {
+	    stringReturn.append('\n');
+	    stringReturn.append(child.toString(tab + 2));
+	}
+
+	stringReturn.append(')');
+
+	return stringReturn.toString();
+    }
+
 }

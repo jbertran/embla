@@ -26,4 +26,18 @@ public class Sprite extends Model {
 	}
 	return temp;
     }
+
+    public String toString(int tab) {
+	StringBuffer stringReturn = new StringBuffer();
+	for (int i = 0; i < tab; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(ID);
+	stringReturn.append(" {:x "+x+" :y "+y+" :width "+width+" :height "+height+" :path "+path+"}");
+	for (Model child: children) {
+	    stringReturn.append('\n');
+	    stringReturn.append(child.toString(tab + 2));
+	}
+	return stringReturn.toString();
+    }
+
 }

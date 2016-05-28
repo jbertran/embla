@@ -4,15 +4,15 @@
                      alts! alts!! timeout]]
             [clj.embla.core :as core
              :refer [render-engine]])
-  (:import [java.util.concurrent Semaphore]) 
+  (:import [jv.embla.model Model])
   (:gen-class))
 
 ;; Basic signals for handling.
 (def keyboard-input (chan))
-(def custom-signals '())
+(def custom-signals (list (list "keyboard-input" keyboard-input (atom '()))))
 
 ;; Because it's useful.
-(def mutex (Semaphore. 1))
+(def mutex (Object.))
 
 (defn timer
   "Gives a timer, starting at 0. Count every second."
@@ -32,23 +32,20 @@
 (defn search-signal
   "Search for the named signal into the existing signals. false if signal does not exist."
   [name]
-  (if (empty? custom-signals)
-    false
-    (loop [[sig & signals] custom-signals]
-      (let [sig-name (first sig)]
-        (if (not= (.toString name) sig-name)
-          (if-not (empty? signals)
-            (recur signals)
-            false)
-          sig)))))
+  (loop [[sig & signals] custom-signals]
+    (let [sig-name (first sig)]
+      (if (not= name sig-name)
+        (if-not (empty? signals)
+          (recur signals)
+          false)
+        sig))))
 
 (defmacro create-signal
   "Creates a proper signal for embla."
   [name]
-  (let [custom (chan)]
-    `(if (search-signal ~(.toString name))
-       (throw (Exception. "Trying to create an already existent signal."))
-       (alter-var-root (var custom-signals) #(cons (list (.toString name) custom (atom '())) %)))))
+  `(if (search-signal ~(.toString name))
+     (throw (Exception. "Trying to create an already existent signal."))
+     (alter-var-root (var custom-signals) #(cons (list ~(.toString name) (chan) (atom '())) %))))
 
 (defn signal-register
   "Register the channel fun-sig to the signal named name."
@@ -62,19 +59,19 @@
 (defmacro defsigf
   "Define a function registered to the signal."
   [name & code]
-  (let [channel (chan)]
-    (signal-register name channel)
-    `(go-loop []
-       (let [~'msg (<! channel)
+  `(let [channel# (chan)]
+     (signal-register ~(.toString name) channel#)
+     (go-loop []
+       (let [~'msg (<! channel#)
              ~'world (.getWorld render-engine)]
-         (.acquire mutex)
-         (.setOldWorld render-engine (.clone ~'world))
-         ~@code
-         (.setChanges render-engine
-                      (Model/diff (.getOldWorld render-engine)
-                                  (.getWorld render-engine)))
-         (.release mutex))
-       (recur))))
+         (locking mutex
+           (.setOldWorld render-engine (.clone ~'world))
+           ~@code
+           (.setChanges render-engine
+                        (Model/diff (.getOldWorld render-engine)
+                                    (.getWorld render-engine))))
+         (recur)))
+     channel#))
 
 (defmacro combine
   [name1 name2 sig-name func]
@@ -97,10 +94,12 @@
   []
   (loop [[sig & signals] custom-signals]
     (let [input  (second sig)
-          output (second (rest sig))]
+          output @(second (rest sig))]
+      (println input output)
       (go-loop []
         (let [msg (<! input)]
-          (map #(go (>! % msg)) output))
+          (doseq [in output]
+            (go (>! in msg))))
         (recur))
       (if-not (empty? signals)
         (recur signals)))))

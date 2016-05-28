@@ -22,9 +22,9 @@
 
 (defmacro defgom
   "Creates the GOM. Full or Empty."
-  ([name]
+  ([]
    `(Model. -1 -1 nil "root"))
-  ([name & body]
+  ([& body]
    (let [sym (gensym)]
      `(let [~sym (Model. -1 -1 nil "root")]
         ~@(macroexpand `(add-children-list ~sym ~@body))
@@ -35,7 +35,7 @@
   ([variables]
    `(let [model# (Rectangle. ~(variables :x)
                              ~(variables :y)
-                             ~(variables :length)
+                             ~(variables :width)
                              ~(variables :height)
                              ~(variables :color)
                              ~(variables :id))]
@@ -45,7 +45,7 @@
    (let [sym (gensym)]
      `(let [~sym (Rectangle. ~(variables :x)
                              ~(variables :y)
-                             ~(variables :length)
+                             ~(variables :width)
                              ~(variables :height)
                              ~(variables :color)
                              ~(variables :id))]

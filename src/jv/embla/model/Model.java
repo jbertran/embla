@@ -49,6 +49,12 @@ public class Model {
 		this.y == old.y);
     }
 
+
+    public void relativeMoveTo(int x, int y) {
+	this.x += x;
+	this.y += y;
+    }
+
     // Provide a list of changes between two models.
     public static HashMap<String, Model> diff(Model old, Model fresh) {
 	HashMap<String, Model> changes = new HashMap<>();
@@ -86,24 +92,20 @@ public class Model {
     }
 
     // Print the model.
-    public String toString(int tab) {
+    public String toString() {
 	StringBuffer stringReturn = new StringBuffer();
-
-	for (int i = 0; i < tab; i++)
-	    stringReturn.append(" ");
-	stringReturn.append(ID);
-	stringReturn.append(" ");
-	stringReturn.append(classes);
+	stringReturn.append("(defgom");
 
 	for (Model child: children) {
 	    stringReturn.append('\n');
-	    stringReturn.append(child.toString(tab + 2));
+	    stringReturn.append(child.toString(2));
 	}
-
+	
+	stringReturn.append(")");
 	return stringReturn.toString();
     }
 
-    public String toString() {
-	return toString(0);
+    public String toString(int tab) {
+	return this.toString();
     }
 }
