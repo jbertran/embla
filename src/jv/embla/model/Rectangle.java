@@ -34,8 +34,24 @@ public class Rectangle extends Model {
 
 	for (int i = 0; i < tab; i++)
 	    stringReturn.append(" ");
-	stringReturn.append("(defrect {:x " + x + " :y " + y + " :width " + width + " :height " + height + " :id " + ID + " :color " + color + "}");
-
+	stringReturn.append("(defrect {:x " + x);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":y " + y);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":height " + height);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":width " + width);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":id " + ID);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":color (color " + color.getRed() + 
+			    " " + color.getGreen() + 
+			    " " + color.getBlue() + ")}");
 	for (Model child: children) {
 	    stringReturn.append('\n');
 	    stringReturn.append(child.toString(tab + 2));

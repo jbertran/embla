@@ -37,28 +37,25 @@ public class KeyCallbacks extends GLFWKeyCallback {
     // Send the useful information to Clojure.
     @Override
     public void invoke (long window, int key, int scancode, int action, int mods) {
-	if (action != GLFW.GLFW_REPEAT) {
-	    Keyword state = keywordState(action);
-	    switch (key) {
-	    case GLFW.GLFW_KEY_Z:
-		updateChan(Keyword.intern("Z"), state);
-		break;
-	    case GLFW.GLFW_KEY_Q:
-		updateChan(Keyword.intern("Q"), state);
-		break;
-	    case GLFW.GLFW_KEY_S:
-		updateChan(Keyword.intern("S"), state);
-		break;
-	    case GLFW.GLFW_KEY_D:
-		updateChan(Keyword.intern("D"), state);
-		break;
-	    case GLFW.GLFW_KEY_SPACE:
-		updateChan(Keyword.intern("SPACE"), state);
-		break;
-	    case GLFW.GLFW_KEY_ESCAPE:
-		GLFW.glfwSetWindowShouldClose(window, GLFW.GLFW_TRUE);
-	    }
+	Keyword state = keywordState(action);
+	switch (key) {
+	case GLFW.GLFW_KEY_W:
+	    updateChan(Keyword.intern("Z"), state);
+	    break;
+	case GLFW.GLFW_KEY_A:
+	    updateChan(Keyword.intern("Q"), state);
+	    break;
+	case GLFW.GLFW_KEY_S:
+	    updateChan(Keyword.intern("S"), state);
+	    break;
+	case GLFW.GLFW_KEY_D:
+	    updateChan(Keyword.intern("D"), state);
+	    break;
+	case GLFW.GLFW_KEY_SPACE:
+	    updateChan(Keyword.intern("SPACE"), state);
+	    break;
+	case GLFW.GLFW_KEY_ESCAPE:
+	    GLFW.glfwSetWindowShouldClose(window, GLFW.GLFW_TRUE);
 	}
-	// Don't want to push repeat on the channel.
     }
 }

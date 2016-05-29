@@ -1,9 +1,3 @@
-(use 'clj.embla.core)
-black
-(defrect {:id 'truc' :length 400 :height 400 :x 2 :y 2 :color black})
-(defrect {:id "truc" :length 400 :height 400 :x 2 :y 2 :color black})
-(boot (build))
-(boot (run))
 (boot (build))
 (boot (run))
 (boot (build))
@@ -498,3 +492,9 @@ keyboard-input
 (clear-all)
 (.addChild (.getWorld render-engine) (defcircle {:x 100 :y 100 :radius 50 :color (color 0 0 0) :id "circle"}))
 (clear-all)
+(boot (build)) (boot (run))
+(.addChild (.getWorld render-engine) (defcircle {:x 100 :y 100 :radius 50 :color (color 0 0 0) :id "rond"}))
+(boot (build)) (boot (run))
+glxinfo
+(boot (build)) (boot (run))
+(.addChild (.getWorld render-engine) (defcircle {:x 100 :y 100 :radius 50 :color (color 0 0 0) :id "rond"}))

@@ -19,7 +19,8 @@
   (comp
    (pom :project 'embla :version "1.0.0")
    (javac "src/jv/*")
-   (aot :all)))
+   ;;(aot :all)
+   ))
 
 (deftask run
   "Start an Embla render engine instance"

@@ -32,8 +32,21 @@ public class Circle extends Model {
 
 	for (int i = 0; i < tab; i++)
 	    stringReturn.append(" ");
-	stringReturn.append("(defcircle {:x " + x + " :y " + y + " :radius " + radius + " :id " + ID + " :color " + color + "}");
-
+	stringReturn.append("(defcircle {:x " + x);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":y " + y);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":radius " + radius);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":id " + ID);
+	for (int i = 0; i < tab + 12; i++)
+	    stringReturn.append(" ");
+	stringReturn.append(":color (color " + color.getRed() + 
+			    " " + color.getGreen() + 
+			    " " + color.getBlue() + ")}");
 	for (Model child: children) {
 	    stringReturn.append('\n');
 	    stringReturn.append(child.toString(tab + 2));
