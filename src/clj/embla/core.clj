@@ -21,6 +21,11 @@
   []
   (println (.toString (.getWorld render-engine))))
 
+(defn world
+  "Get the world model value"
+  []
+  (.getWorld render-engine))
+
 (defn show-node
   "Show the given node"
   [node]
@@ -34,3 +39,9 @@
       (.get opt)
       nil)))
 
+(defn get-child
+  "Get the pos'th child of the node, or the first if no pos specified"
+  ([node]
+    (.get (.children node) 0))
+  ([node & pos]
+    (.get (.children node) pos)))
