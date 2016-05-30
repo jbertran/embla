@@ -1,104 +1,3 @@
-  []
-  (loop [[sig & signals] custom-signals]
-    (let [input  (second sig)
-          output (second (rest sig))]
-      (go-loop []
-        (let [msg (<! input)]
-          (map #(go (>! % msg)) output))
-        (recur))
-      (if-not (empty? signals)
-        (recur signals)))))
-  (if (search-signal (.toString sig-name))
-    (throw (Exception. "Trying to create an already existent signal."))
-    (let [channel (chan)
-          sig1 (chan)
-          sig2 (chan)]
-      (signal-register name1 sig1)
-      (signal-register name2 sig2)
-      (go-loop []
-        (let [msg1 (<! sig1)
-              msg2 (<! sig2)]
-          (>! chan (func msg1 msg2)))
-        (recur))
-      (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) channel (atom '())) %)))))
-(defn broadcast-all
-  "Transfer the value from the channel to all functions which need it."
-  []
-  (loop [[sig & signals] custom-signals]
-    (let [input  (second sig)
-          output (second (rest sig))]
-      (go-loop []
-        (let [msg (<! input)]
-          (map #(go (>! % msg)) output))
-        (recur))
-      (if-not (empty? signals)
-        (recur signals)))))
-  (if (search-signal (.toString sig-name))
-    (throw (Exception. "Trying to create an already existent signal."))
-    (let [channel (chan)
-          sig1 (chan)
-          sig2 (chan)]
-      (signal-register name1 sig1)
-      (signal-register name2 sig2)
-      (go-loop []
-        (let [msg1 (<! sig1)
-              msg2 (<! sig2)]
-          (>! chan (func msg1 msg2)))
-        (recur))
-      (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) channel (atom '())) %)))))
-(defn broadcast-all
-  "Transfer the value from the channel to all functions which need it."
-  []
-  (loop [[sig & signals] custom-signals]
-    (let [input  (second sig)
-          output (second (rest sig))]
-      (go-loop []
-        (let [msg (<! input)]
-          (map #(go (>! % msg)) output))
-        (recur))
-      (if-not (empty? signals)
-        (recur signals)))))
-(.addChildren (.getWorld render-engine) (defrect {:x 0 :y 0 :length 100 :width 100 :color (Color . 255 255 255) :id "none"}))
-(import java.awt.Color)
-(.addChildren (.getWorld render-engine) (defrect {:x 0 :y 0 :length 100 :width 100 :color (Color . 255 255 255) :id "none"}))
-(.addChildren (.getWorld render-engine) (defrect {:x 0 :y 0 :length 100 :width 100 :color (Color. 255 255 255) :id "none"}))
-(.toString (.getWorld render-engine))
-(println (.toString (.getWorld render-engine)))
-(println (children (.getWorld render-engine)))
-(println (.children (.getWorld render-engine)))
-(boot (build))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(boot (build))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(println (.children (.children (.getWorld render-engine))))
-(println (.children (.get (.children (.getWorld render-engine)) 0)))
-(boot (run))
-(println (.children (.children (.getWorld render-engine))))
-(println (.children (.getWorld render-engine)))
-(println (.children (.children (.getWorld render-engine))))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(boot (build))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(boot (build))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(boot (run))
-render-engine
-(boot (build))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(boot (run))
-(println (.children (.getWorld render-engine)))
-(println (.children (.get (.children (.getWorld render-engine)) 0)))
-(boot (build))
-(boot (run))
-(boot (build))
 (boot (run))
 (boot (build))
 (boot (run))
@@ -498,3 +397,104 @@ ls
 (boot (run))
 (boot (build))
 (boot (run))
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))
+(.addChild (.getWorld render-engine)
+           (defcircle {:x 100
+                       :y 100
+                       :radius 50
+                       :color (color 0 0 0)
+                       :id "outer"}
+             (defcircle {:x 100
+                         :y 100
+                         :radius 25
+                         :color (color 255 255 255)
+                         :id "inner"})))
+(do
+  (defsig  time (timer))
+  (defsigf time
+    (println "Time ! " msg))
+  (defsigf keyboard-input
+    (case (fst msg)
+      :Z (.relativeMoveTo (node-by-id "inner")  0  1)
+      :Q (.relativeMoveTo (node-by-id "inner")  0 -1)
+      :S (.relativeMoveTo (node-by-id "inner") -1  0)
+      :D (.relativeMoveTo (node-by-id "inner")  1  0))))
+(boot (build)) (boot (run))
+(.addChild (.getWorld render-engine)
+           (defcircle {:x 100
+                       :y 100
+                       :radius 50
+                       :color (color 0 0 0)
+                       :id "outer"}
+             (defcircle {:x 100
+                         :y 100
+                         :radius 25
+                         :color (color 255 255 255)
+                         :id "inner"})))
+  (defsig  time (timer))
+(defsigf time
+    (println "Time ! " msg))
+ (defsigf keyboard-input
+    (case (fst msg)
+      :Z (.relativeMoveTo (node-by-id "inner")  0  1)
+      :Q (.relativeMoveTo (node-by-id "inner")  0 -1)
+      :S (.relativeMoveTo (node-by-id "inner") -1  0)
+      :D (.relativeMoveTo (node-by-id "inner")  1  0)))
+(defsigf keyboard-input
+    (let [value (fst msg)]
+      (case value
+        :Z (.relativeMoveTo (node-by-id "inner")  0  1)
+        :Q (.relativeMoveTo (node-by-id "inner")  0 -1)
+        :S (.relativeMoveTo (node-by-id "inner") -1  0)
+        :D (.relativeMoveTo (node-by-id "inner")  1  0))))
+(defsigf keyboard-input (println (fst msg)))
+(macroexpand '(defsigf keyboard-input (println (fst msg))))
+(defsigf keyboard-input
+    (let [value (first msg)]
+      (case value
+        :Z (.relativeMoveTo (node-by-id "inner")  0  1)
+        :Q (.relativeMoveTo (node-by-id "inner")  0 -1)
+        :S (.relativeMoveTo (node-by-id "inner") -1  0)
+        :D (.relativeMoveTo (node-by-id "inner")  1  0))))
+(broadcast-all)
+(boot (build)) (boot (run))
+(.addChild (.getWorld render-engine)
+           (defcircle {:x 100
+                       :y 100
+                       :radius 50
+                       :color (color 0 0 0)
+                       :id "outer"}
+             (defcircle {:x 100
+                         :y 100
+                         :radius 25
+                         :color (color 255 255 255)
+                         :id "inner"})))
+(do
+  (defsig  time (timer))
+  (defsigf time
+    (println "Time ! " msg))
+  (defsigf keyboard-input
+    (let [value (first msg)]
+      (case value
+        :Z (.relativeMoveTo (node-by-id "inner")  0  1)
+        :S (.relativeMoveTo (node-by-id "inner")  0 -1)
+        :Q (.relativeMoveTo (node-by-id "inner") -1  0)
+        :D (.relativeMoveTo (node-by-id "inner")  1  0)))))
+(broadcast-all)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)
+(boot (build)) (boot (run))
+(use 'clj.embla.examples)

@@ -43,7 +43,7 @@ much as desired, to build complex models in a single REPL submission.
 You may also create a file regrouping macro calls and call (load-file
   <your_file>) within the REPL to achieve the same effect.
 
-See the file `src/clj/embla/examples.clj` for a quick and dirty example of model and signal interaction. You can require the file to get a working example : (use 'clj.embla.examples) in your REPL will take care of everything for you.
+See the file `src/clj/embla/examples.clj` for a quick and dirty example of model and signal interaction.
 
 #### Defining model objects
 
@@ -97,9 +97,8 @@ keyboard-input signal emitting the string corresponding to the key pressed.
 (defsigf name code)         ;; registers a code snippet to the named signal
 (combine name1 name2 code)  ;; combine signals name1 and name2, manage input
                             ;; signals with snippet code
-```
 
-The `(broadcast-all)` function is the main function to connect signals : after registering functions to signals with `(defsigf)`, use `(broadcast-all)` to transmit informations from the signal to the function. `(broadcast-all)` is required for every new function registered to a signal.
+```
 
 ## Wishlist
 

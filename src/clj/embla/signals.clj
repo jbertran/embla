@@ -45,7 +45,7 @@
   [name channel]
   `(if (search-signal ~(.toString name))
      (throw (Exception. "Trying to create an already existent signal."))
-     (alter-var-root (var custom-signals) #(cons (list ~(.toString name) channel (atom '())) %))))
+     (alter-var-root (var custom-signals) #(cons (list ~(.toString name) ~channel (atom '())) %))))
 
 (defn signal-register
   "Register the channel fun-sig to the signal named name."
