@@ -21,7 +21,7 @@
   []
   (println (.toString (.getWorld render-engine))))
 
-(defn world
+(defn get-world
   "Get the world model value"
   []
   (.getWorld render-engine))
@@ -45,3 +45,8 @@
     (.get (.children node) 0))
   ([node & pos]
     (.get (.children node) pos)))
+
+(defn add-child
+  "Add child node to selected node"
+  [target child]
+  (.addChild target child))

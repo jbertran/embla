@@ -3,7 +3,7 @@
             [clj.embla.signals :as sigs]))
 
 (.addChild (.getWorld render-engine)
-           (defcircle {:x 100 
+           (defcircle {:x 100
                        :y 100
                        :radius 50
                        :color (color 0 0 0)
@@ -22,5 +22,5 @@
     (case (fst msg)
       :Z (.relativeMoveTo (node-by-id "inner")  0  1)
       :Q (.relativeMoveTo (node-by-id "inner")  0 -1)
-      :Q (.relativeMoveTo (node-by-id "inner") -1  0)
-      :Q (.relativeMoveTo (node-by-id "inner")  1  0))))
+      :S (.relativeMoveTo (node-by-id "inner") -1  0)
+      :D (.relativeMoveTo (node-by-id "inner")  1  0))))

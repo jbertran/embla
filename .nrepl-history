@@ -1,40 +1,3 @@
-(boot (build))
-(boot (run))
-(boot (build))
-(boot (run))
-(boot (build))
-(boot (run))
-(boot (build))
-(boot (run))
-(boot (build))
-(boot (run))
-(boot (build))
-(boot (run))
-(use 'clj.tests.print)
-(boot (build))
-(boot (run))
-(use 'clj.tests.print)
-(boot (run))
-render-engine
-(.getWorld render-engine)
-(.addChildren (.getWorld render-engine) (defrect {:x 0 :y 0 :length 100 :width 100 :color (Color . 255 255 255) :id "none"}))
-(use 'java.awt.Color)
-(require 'java.awt.Color)
-  (if (search-signal (.toString sig-name))
-    (throw (Exception. "Trying to create an already existent signal."))
-    (let [channel (chan)
-          sig1 (chan)
-          sig2 (chan)]
-      (signal-register name1 sig1)
-      (signal-register name2 sig2)
-      (go-loop []
-        (let [msg1 (<! sig1)
-              msg2 (<! sig2)]
-          (>! chan (func msg1 msg2)))
-        (recur))
-      (alter-var-root (var custom-signals) #(cons (list (.toString sig-name) channel (atom '())) %)))))
-(defn broadcast-all
-  "Transfer the value from the channel to all functions which need it."
   []
   (loop [[sig & signals] custom-signals]
     (let [input  (second sig)
@@ -498,3 +461,40 @@ keyboard-input
 glxinfo
 (boot (build)) (boot (run))
 (.addChild (.getWorld render-engine) (defcircle {:x 100 :y 100 :radius 50 :color (color 0 0 0) :id "rond"}))
+(boot (build))
+(boot (run))
+(show-world)
+(clear-all)
+(.addChild (world) (defrect {:x 100 :y 100 :width 200 :height 200 :color (color 255 0 0) :id "hi"}))
+*
+(show-world)
+(.addChild (world) (defrect {:x 150 :y 150 :width 100 :height 00 :color (color 0 255 0) :id "hi"}))
+(.addChild (world) (defrect {:x 150 :y 150 :width 100 :height 00 :color (color 0 255 0) :id "hilol"}))
+(show-world)
+(boot (build))
+(boot (run))
+ls
+(add-children (world) (defcircle {:x 200 :y 200 :radius 100 :color (color 0 0 255) :id "circle"}))
+(add-children (get-world) (defcircle {:x 200 :y 200 :radius 100 :color (color 0 0 255) :id "circle"}))
+(let [n (node-by-id "circle")]
+(add-children n (defrect {:x 150 :y 150 :width 100 :length 100 :color (color 255 0 0) :id "rect"})))
+(let [n (node-by-id "circle")] (add-children n (defrect {:x 150 :y 150 :width 100 :length 100 :color (color 255 0 0) :id "rect"})))
+(node-by-id "circle")
+(let [n (node-by-id "circle")] (add-children n (defrect {:x 150 :y 150 :width 100 :length 100 :color (color 255 0 0
+(add-children (node-by-id "circle") (defrect {:x 150 :y 150 :width 100 :length 100 :color (color 255 0 0) :id "rect"}))
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))
+(add-child (world) (defcircle {:x 200 :y 200 :radius 200 :color (color 255 0 0}
+(add-child (world) (defcircle {:x 200 :y 200 :radius 200 :color (color 255 0 0) :id "c"}))
+(add-child (get-world) (defcircle {:x 200 :y 200 :radius 200 :color (color 255 0 0) :id "c"}))
+(add-child (get-node "c") (defrect {:x 150 :y 150 :height 100 :width 100 :color (color 255 0 0) :id "c"})
+(add-child (get-node "c") (defrect {:x 150 :y 150 :height 100 :width 100 :color (color 0 255 0) :id "r"}))
+(add-child (node-by-id "c") (defrect {:x 150 :y 150 :height 100 :width 100 :color (color 0 255 0) :id "r"}))
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))
+(boot (build))
+(boot (run))

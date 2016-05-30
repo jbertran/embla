@@ -68,10 +68,6 @@ public class GLTriangle extends GLShape implements IGLShape {
 		glpos[i++] = yToProjection(b[1]);
 		glpos[i++] = xToProjection(c[0]);
 		glpos[i++] = yToProjection(c[1]);
-		String p = "";
-		for (int j = 0; j < 6; j++)
-		p += glpos[j] + ", ";
-		System.out.println(p);
 		positionToVBO(glpos);
 		colorToVBO(col);
 	}
